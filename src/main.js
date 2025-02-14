@@ -1,4 +1,4 @@
-import Expand from '@arcgis/core/widgets/Expand';
+import Expand from "./node_modules/@arcgis/core/widgets/Expand.js";
 import MapView from "@arcgis/core/views/MapView";
 import Map from "@arcgis/core/Map";
 import Basemap from "@arcgis/core/Basemap";
