@@ -1,11 +1,11 @@
 import { defineConfig } from "vite";
 
 export default defineConfig({
-  base: "/atlas_backup_360/",  // Set to your GitHub Pages repo name
+  base: "/atlas_backup_360/", // Ensures correct paths for GitHub Pages
   build: {
-    chunkSizeWarningLimit: 2000
+    outDir: "dist",
   },
-  server: {
-    open: true
-  }
+  optimizeDeps: {
+    include: ["@arcgis/core"],
+  },
 });
