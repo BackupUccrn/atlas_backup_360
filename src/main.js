@@ -426,7 +426,7 @@ function updatePdfIframe(city) {
       pdfPath = `${pdfBasePath}mex-test.pdf#zoom=35`;
     } else if (city === "Durban") {
       pdfPath = `${pdfBasePath}Durb-test.pdf#zoom=35`;
-    
+    }
     if (pdfPath) {
       pdfIframe.src = pdfPath;
       pdfIframe.onerror = () => {
