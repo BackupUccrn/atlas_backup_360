@@ -162,6 +162,12 @@ const DurbanLayer = new GeoJSONLayer({
   ...layerOptions
 });
 
+const rioLayer = new GeoJSONLayer({
+  url: new URL("../cities/Rio-de-Janeiro-city.geojson", import.meta.url).href,
+  title: "Rio de Janeiro",
+  ...layerOptions
+});
+
 const saLayer = new GeoJSONLayer({
   url: new URL("../cities/singapore.geojson", import.meta.url).href,
   title: "Singapore",
@@ -171,7 +177,7 @@ const saLayer = new GeoJSONLayer({
 // Create map with basemap and layers
 const map = new Map({
   basemap: basemap,
-  layers: [yceouhi_v4, lecz_v3, ssp245, nycLayer, laLayer, copLayer, mexLayer, DurbanLayer, saLayer],
+  layers: [yceouhi_v4, lecz_v3, ssp245, nycLayer, laLayer, copLayer, mexLayer, DurbanLayer, rioLayer, saLayer],
   // Add attribution
   portalItem: {
     attribution: "CIESIN, Columbia University"
@@ -426,7 +432,10 @@ function updatePdfIframe(city) {
       pdfPath = `${pdfBasePath}mex-test.pdf#zoom=35`;
     } else if (city === "Durban") {
       pdfPath = `${pdfBasePath}Durb-test.pdf#zoom=35`;
+    } else if (city === "Rio") {
+    pdfPath = `${pdfBasePath}rio-test.pdf#zoom=35`;
     }
+    
     if (pdfPath) {
       pdfIframe.src = pdfPath;
       pdfIframe.onerror = () => {
@@ -474,6 +483,10 @@ activeView.whenLayerView(mexLayer).then((layerView) => {
 
 activeView.whenLayerView(DurbanLayer).then((layerView) => {
   activeView.on("click", (event) => handleLayerViewClick(event, DurbanLayer, "Durban"));
+});
+
+activeView.whenLayerView(rioLayer).then((layerView) => {
+  activeView.on("click", (event) => handleLayerViewClick(event, rioLayer, "Rio de Janeiro"));
 });
 
 
@@ -600,6 +613,15 @@ const searchWidget = new Search({
       outFields: ["*"],
       name: "Durban",
       placeholder: "Search Durban"
+    },
+    {
+      layer: rioLayer,
+      searchFields: ["name", "uccrn"],
+      displayField: "name",
+      exactMatch: false,
+      outFields: ["*"],
+      name: "Rio de Janeiro",
+      placeholder: "Search Rio de Janeiro"
     },
     {
       layer: saLayer,
