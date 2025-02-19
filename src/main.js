@@ -156,6 +156,12 @@ const mexLayer = new GeoJSONLayer({
   ...layerOptions
 });
 
+const nycLayer = new GeoJSONLayer({
+  url: new URL("../cities/Durban.geojson", import.meta.url).href,
+  title: "Durban",
+  ...layerOptions
+});
+
 const saLayer = new GeoJSONLayer({
   url: new URL("../cities/singapore.geojson", import.meta.url).href,
   title: "Singapore",
