@@ -156,7 +156,7 @@ const mexLayer = new GeoJSONLayer({
   ...layerOptions
 });
 
-const nycLayer = new GeoJSONLayer({
+const DurbanLayer = new GeoJSONLayer({
   url: new URL("../cities/Durban.geojson", import.meta.url).href,
   title: "Durban",
   ...layerOptions
@@ -171,7 +171,7 @@ const saLayer = new GeoJSONLayer({
 // Create map with basemap and layers
 const map = new Map({
   basemap: basemap,
-  layers: [yceouhi_v4, lecz_v3, ssp245, nycLayer, laLayer, copLayer, mexLayer, saLayer],
+  layers: [yceouhi_v4, lecz_v3, ssp245, nycLayer, laLayer, copLayer, mexLayer, DurbanLayer, saLayer],
   // Add attribution
   portalItem: {
     attribution: "CIESIN, Columbia University"
@@ -424,7 +424,8 @@ function updatePdfIframe(city) {
       pdfPath = `${pdfBasePath}cop-test.pdf#zoom=35`;
     } else if (city === "Mexico City") {
       pdfPath = `${pdfBasePath}mex-test.pdf#zoom=35`;
-    }
+    } else if (city === "Durban") {
+      pdfPath = `${pdfBasePath}Durb-test.pdf#zoom=35`;
     
     if (pdfPath) {
       pdfIframe.src = pdfPath;
@@ -470,6 +471,11 @@ activeView.whenLayerView(copLayer).then((layerView) => {
 activeView.whenLayerView(mexLayer).then((layerView) => {
   activeView.on("click", (event) => handleLayerViewClick(event, mexLayer, "Mexico City"));
 });
+
+activeView.whenLayerView(DurbanLayer).then((layerView) => {
+  activeView.on("click", (event) => handleLayerViewClick(event, DurbanLayer, "Durban"));
+});
+
 
 // Add click handler to close feature widget when clicking outside
 activeView.on("click", (event) => {
@@ -585,6 +591,15 @@ const searchWidget = new Search({
       outFields: ["*"],
       name: "Mexico City",
       placeholder: "Search Mexico City"
+    },
+    {
+      layer: DurbanLayer,
+      searchFields: ["name", "uccrn"],
+      displayField: "name",
+      exactMatch: false,
+      outFields: ["*"],
+      name: "Durban",
+      placeholder: "Search Durban"
     },
     {
       layer: saLayer,
