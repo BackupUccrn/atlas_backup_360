@@ -200,20 +200,23 @@ Layer.fromPortalItem({
   });
 });
 
-// Add portal layer land cover 
-Landcover23.fromPortalItem({
+
+// Add portal layer for Land Cover
+Layer.fromPortalItem({
   portalItem: {
     id: "eb4f0fd5274242a18bde901f78f7584d"
   }
-}).then((Landcover23) => {
-  Landcover23.visible = false; // Start with layer hidden
-  map.add(Landcover23);
+}).then((landCoverLayer) => {
+  landCoverLayer.visible = false; // Start with the layer hidden
+  map.add(landCoverLayer);
 
   // Add layer to layer list
   layerList.operationalItems.add({
-    layer: Landcover23,
-    title: "Land cover 2023 MODIS"
+    layer: landCoverLayer,
+    title: "Land Cover 2023 MODIS"
   });
+}).catch((error) => {
+  console.error("Error loading Land Cover layer:", error);
 });
 
 // Setup portal and group query
