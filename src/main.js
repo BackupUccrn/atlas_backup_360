@@ -201,17 +201,17 @@ Layer.fromPortalItem({
 });
 
 // Add portal layer land cover 
-Layer.fromPortalItem({
+Landcover23.fromPortalItem({
   portalItem: {
     id: "eb4f0fd5274242a18bde901f78f7584d"
   }
-}).then((layer) => {
-  layer.visible = false; // Start with layer hidden
-  map.add(layer);
+}).then((Landcover23) => {
+  Landcover23.visible = false; // Start with layer hidden
+  map.add(Landcover23);
 
   // Add layer to layer list
   layerList.operationalItems.add({
-    layer: layer,
+    layer: Landcover23,
     title: "Land cover 2023 MODIS"
   });
 });
