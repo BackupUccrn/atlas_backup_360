@@ -200,6 +200,22 @@ Layer.fromPortalItem({
   });
 });
 
+// Add portal layer land cover 
+Layer.fromPortalItem({
+  portalItem: {
+    id: "eb4f0fd5274242a18bde901f78f7584d"
+  }
+}).then((layer) => {
+  layer.visible = false; // Start with layer hidden
+  map.add(layer);
+
+  // Add layer to layer list
+  layerList.operationalItems.add({
+    layer: layer,
+    title: "Land cover 2023 MODIS"
+  });
+});
+
 // Setup portal and group query
 const portal = new Portal();
 portal.load().then(() => {
