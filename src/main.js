@@ -206,13 +206,13 @@ Layer.fromPortalItem({
   portalItem: {
     id: "eb4f0fd5274242a18bde901f78f7584d"
   }
-}).then((landCoverLayer) => {
-  landCoverLayer.visible = false; // Start with the layer hidden
-  map.add(landCoverLayer);
+}).then((layer) => {
+  layer.visible = false; // Start with the layer hidden
+  map.add(layer);
 
   // Add layer to layer list
   layerList.operationalItems.add({
-    layer: landCoverLayer,
+    layer: layer,
     title: "Land Cover 2023 MODIS"
   });
 }).catch((error) => {
