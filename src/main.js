@@ -421,11 +421,11 @@ htmlIframe.onload = function () {
             const query = climateLayer.createQuery();
             query.where = "1=1"; // Select all features
             query.returnDistinctValues = true;
-            query.outFields = ["Global climate (Köppen–Geiger climate classification)"]; // Assuming "ClimateZone" is the field name
+            query.outFields = ["Untitled_5"];
 
             climateLayer.queryFeatures(query).then((result) => {
                 result.features.forEach(feature => {
-                    const climateZone = feature.attributes.ClimateZone;
+                    const climateZone = feature.attributes.Untitled_5;
                     const option = iframeDoc.createElement("option");
                     option.value = climateZone;
                     option.textContent = climateZone;
@@ -439,7 +439,7 @@ htmlIframe.onload = function () {
             const selectedZone = climateZoneSelect.value;
 
             if (selectedZone) {
-                climateLayer.definitionExpression = `ClimateZone = '${selectedZone}'`;
+                climateLayer.definitionExpression = `Untitled_5 = '${selectedZone}'`;
                 climateLayer.visible = true;
             } else {
                 climateLayer.definitionExpression = null; // Show all zones
