@@ -345,8 +345,8 @@ const htmlIframe = document.createElement("iframe");
 htmlIframe.style.width = "100%";
 htmlIframe.style.height = "calc(100vh - 100px)";
 htmlIframe.style.border = "none";
-console.log("Attempting to load:", "https://backupuccrn.github.io/atlas_backup_360/public/info.html");
-htmlIframe.src = "https://backupuccrn.github.io/atlas_backup_360/public/info.html";
+console.log("Attempting to load:", "./info.html");
+htmlIframe.src = "./info.html";
 featureWidgetContainer.appendChild(htmlIframe);
 
 const featureExpand = new Expand({
