@@ -349,6 +349,55 @@ console.log("Attempting to load:", "./info.html");
 htmlIframe.src = "./info.html";
 featureWidgetContainer.appendChild(htmlIframe);
 
+// Wait for the iframe to load before modifying its content
+htmlIframe.onload = function () {
+    const iframeDoc = htmlIframe.contentDocument || htmlIframe.contentWindow.document;
+    const citySelect = iframeDoc.getElementById("citySelect");
+
+    if (!citySelect) {
+        console.error("City select dropdown not found in info.html");
+        return;
+    }
+
+    // Define city layers and their coordinates
+    const cities = [
+        { name: "New York City", layer: nycLayer, center: [-74.006, 40.7128], zoom: 10 },
+        { name: "Los Angeles", layer: laLayer, center: [-118.2437, 34.0522], zoom: 10 },
+        { name: "Copenhagen", layer: copLayer, center: [12.5683, 55.6761], zoom: 11 },
+        { name: "Mexico City", layer: mexLayer, center: [-99.1332, 19.4326], zoom: 10 },
+        { name: "Durban", layer: DurbanLayer, center: [31.0218, -29.8587], zoom: 12 },
+        { name: "Rio de Janeiro", layer: rioLayer, center: [-43.1729, -22.9068], zoom: 11 },
+        { name: "Singapore", layer: saLayer, center: [103.8198, 1.3521], zoom: 11 }
+    ];
+
+    // Populate dropdown with city names
+    cities.forEach(city => {
+        const option = iframeDoc.createElement("option");
+        option.value = city.name;
+        option.textContent = city.name;
+        citySelect.appendChild(option);
+    });
+
+    // Handle dropdown selection to zoom and show the correct city
+    citySelect.addEventListener("change", () => {
+        const selectedCity = cities.find(c => c.name === citySelect.value);
+        if (selectedCity) {
+            // Zoom to selected city
+            activeView.goTo({
+                center: selectedCity.center,
+                zoom: selectedCity.zoom
+            });
+
+            // Make only the selected city's layer visible, hide others
+            cities.forEach(city => {
+                city.layer.visible = (city.name === selectedCity.name);
+            });
+        }
+    });
+
+    console.log("City filter successfully injected into info.html");
+};
+
 const featureExpand = new Expand({
   view: activeView,
   content: featureWidgetContainer,
