@@ -346,7 +346,7 @@ htmlIframe.style.width = "100%";
 htmlIframe.style.height = "calc(100vh - 100px)";
 htmlIframe.style.border = "none";
 
-htmlIframe.src = "info.html";
+htmlIframe.src = "/src/info.html";
 featureWidgetContainer.appendChild(htmlIframe);
 
 const featureExpand = new Expand({
