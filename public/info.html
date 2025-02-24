@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -20,6 +21,9 @@
             display: block;
             margin-top: 10px;
         }
+        .filter-container {
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -28,13 +32,13 @@
     <p>This section provides details about the selected feature.</p>
 
     <ul>
-        <li>Data Source: UCCRN</li>
+        <li><strong>Data Source:</strong> UCCRN</li>
         <li>blablabla</li>
         <li>2025</li>
-    </ul> <!-- Closing the unordered list properly -->
+    </ul> <!--Closing the unordered list properly -->
 
     <!-- City Filter Dropdown -->
-    <div id="cityFilterContainer">
+    <div id="cityFilterContainer" class="filter-container">
         <label for="citySelect">Select a City:</label>
         <select id="citySelect" class="esri-input esri-select">
             <option value="" selected disabled>Choose a city...</option>
@@ -42,15 +46,23 @@
     </div>
 
     <!-- Mega Cities Checkbox -->
-    <div id="megaCitiesContainer">
+    <div id="megaCitiesContainer" class="filter-container">
         <label>
-            <input type="checkbox" id="megaCitiesCheck">
-            Show Mega Cities
+            <input type="checkbox" id="megaCitiesCheck" checked> <!-- Default Checked -->
+            Mega Cities
+        </label>
+    </div>
+
+    <!-- Large Cities Checkbox -->
+    <div id="largeCitiesContainer" class="filter-container">
+        <label>
+            <input type="checkbox" id="largeCitiesCheck" checked> <!-- Default Checked -->
+            Large Cities
         </label>
     </div>
 
     <!-- Case Study Dropdown -->
-    <div id="caseStudyContainer">
+    <div id="caseStudyContainer" class="filter-container">
         <label for="caseStudySelect">Select a Case Study:</label>
         <select id="caseStudySelect" class="esri-input esri-select">
             <option value="" selected disabled>Choose a case study type...</option>
