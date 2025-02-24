@@ -346,7 +346,7 @@ htmlIframe.style.width = "100%";
 htmlIframe.style.height = "calc(100vh - 100px)";
 htmlIframe.style.border = "none";
 
-htmlIframe.src = "/atlas_backup_360/src/info.html" ;
+htmlIframe.src = htmlIframe.src = import.meta.env.DEV ? "./src/info.html" : "/atlas_backup_360/info.html";
 featureWidgetContainer.appendChild(htmlIframe);
 
 const featureExpand = new Expand({
