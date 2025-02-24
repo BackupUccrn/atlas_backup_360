@@ -354,9 +354,10 @@ htmlIframe.onload = function () {
     const iframeDoc = htmlIframe.contentDocument || htmlIframe.contentWindow.document;
     const citySelect = iframeDoc.getElementById("citySelect");
     const megaCitiesCheck = iframeDoc.getElementById("megaCitiesCheck");
+    const climateZoneSelect = iframeDoc.getElementById("climateZoneSelect");
 
-    if (!citySelect || !megaCitiesCheck) {
-        console.error("City select dropdown or Mega Cities checkbox not found in info.html");
+    if (!citySelect || !megaCitiesCheck || !climateZoneSelect) {
+        console.error("Dropdowns not found in info.html");
         return;
     }
 
@@ -374,7 +375,7 @@ htmlIframe.onload = function () {
     // Define Mega Cities
     const megaCities = [nycLayer, laLayer, mexLayer];
 
-    // Populate dropdown with city names from existing `cities` array
+    // Populate dropdown with city names
     cities.forEach(city => {
         const option = iframeDoc.createElement("option");
         option.value = city.name;
@@ -410,7 +411,48 @@ htmlIframe.onload = function () {
         console.log(isChecked ? "Mega Cities are now visible." : "Mega Cities are now hidden.");
     });
 
-    console.log("City filter and Mega Cities checkbox successfully injected into info.html");
+    // Handle Climate Zone Filtering 
+    // Find the climate classification layer
+    const climateLayer = map.layers.find(layer => layer.title.includes("Köppen–Geiger-climate-classification"));
+
+    if (climateLayer) {
+        // Query unique climate zones from the layer
+        climateLayer.when(() => {
+            const query = climateLayer.createQuery();
+            query.where = "1=1"; // Select all features
+            query.returnDistinctValues = true;
+            query.outFields = ["ClimateZone"]; // Assuming "ClimateZone" is the field name
+
+            climateLayer.queryFeatures(query).then((result) => {
+                result.features.forEach(feature => {
+                    const climateZone = feature.attributes.ClimateZone;
+                    const option = iframeDoc.createElement("option");
+                    option.value = climateZone;
+                    option.textContent = climateZone;
+                    climateZoneSelect.appendChild(option);
+                });
+            }).catch(error => console.error("Error querying climate zones:", error));
+        });
+
+        // Handle Climate Zone Selection
+        climateZoneSelect.addEventListener("change", () => {
+            const selectedZone = climateZoneSelect.value;
+
+            if (selectedZone) {
+                climateLayer.definitionExpression = `ClimateZone = '${selectedZone}'`;
+                climateLayer.visible = true;
+            } else {
+                climateLayer.definitionExpression = null; // Show all zones
+                climateLayer.visible = false;
+            }
+
+            console.log(`Climate Zone selected: ${selectedZone}`);
+        });
+    } else {
+        console.error("Climate classification layer not found.");
+    }
+
+    console.log("City filter, Mega Cities checkbox, and Climate Zone dropdown successfully injected into info.html");
 };
 ///////////////////////////////////////////////////////////////////////////////////
 
