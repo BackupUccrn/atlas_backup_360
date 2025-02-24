@@ -421,7 +421,7 @@ htmlIframe.onload = function () {
             const query = climateLayer.createQuery();
             query.where = "1=1"; // Select all features
             query.returnDistinctValues = true;
-            query.outFields = ["Untitled_5"]; // Assuming "ClimateZone" is the field name
+            query.outFields = ["Global climate (Köppen–Geiger climate classification)"]; // Assuming "ClimateZone" is the field name
 
             climateLayer.queryFeatures(query).then((result) => {
                 result.features.forEach(feature => {
