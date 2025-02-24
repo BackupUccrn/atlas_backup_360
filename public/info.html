@@ -15,35 +15,47 @@
         p {
             font-size: 14px;
         }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
+
     <h1>Welcome to the Feature Information Widget</h1>
     <p>This section provides details about the selected feature.</p>
-    
+
     <ul>
         <li>Data Source: UCCRN</li>
         <li>blablabla</li>
         <li>2025</li>
-    </ul> <!-- Closing the unordered list properly -->
+    </ul> <!-- ✅ Closing the unordered list properly -->
 
     <!-- City Filter Dropdown -->
-    <div id="cityFilterContainer" style="margin-top: 10px;">
-        <label for="citySelect">Select a city:</label>
+    <div id="cityFilterContainer">
+        <label for="citySelect">Select a City:</label>
         <select id="citySelect" class="esri-input esri-select">
             <option value="" selected disabled>Choose a city...</option>
         </select>
     </div>
 
     <!-- Mega Cities Checkbox -->
-    <div id="megaCitiesContainer" style="margin-top: 10px;">
-        <label for="megaCitiesCheck">
+    <div id="megaCitiesContainer">
+        <label>
             <input type="checkbox" id="megaCitiesCheck">
-            Mega Cities
+            Show Mega Cities
         </label>
+    </div>
+
+    <!-- Climate Zone Dropdown -->
+    <div id="climateZoneContainer">
+        <label for="climateZoneSelect">Select a Climate Zone:</label>
+        <select id="climateZoneSelect" class="esri-input esri-select">
+            <option value="" selected disabled>Choose a climate zone...</option>
+        </select>
     </div>
 
 </body>
 </html>
-
-
