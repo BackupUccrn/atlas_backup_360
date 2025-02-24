@@ -196,10 +196,8 @@ Layer.fromPortalItem({
   // Add layer to layer list
   layerList.operationalItems.add({
     layer: layer,
-    title: "Global climate (KÃ¶ppenâ€“Geiger-climate-classification)"
+    title: "Global climate (Köppen–Geiger-climate-classification)"
   });
-});
-
 
 // Add portal layer for Land Cover
 Layer.fromPortalItem({
@@ -215,9 +213,12 @@ Layer.fromPortalItem({
     layer: layer,
     title: "Land Cover 2023 MODIS"
   });
+});
+  
 }).catch((error) => {
   console.error("Error loading Land Cover layer:", error);
 });
+
 
 // Setup portal and group query
 const portal = new Portal();
@@ -263,7 +264,7 @@ portal.load().then(() => {
 
 // Create view
 const activeView = new MapView({
-  zoom: 6,
+  zoom: 2,
   center: [2.35, 48.85], // Paris coordinates
   container: "viewDiv",
   map: map,
@@ -316,10 +317,14 @@ const timeSliderExpand = new Expand({
   expanded: false
 });
 
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
 // Create feature widget and expand widget
 const featureWidgetContainer = document.createElement("div");
-featureWidgetContainer.style.width = "100%";
-featureWidgetContainer.style.height = "100%";
+featureWidgetContainer.className = "feature-widget-container"; // Base styles
+
+// Ensure the container is ready with expanded styles if starting expanded
+featureWidgetContainer.classList.add("feature-widget-container-expanded"); // Start expanded
 
 const featureWidget = new Feature({
   container: featureWidgetContainer,
@@ -327,27 +332,50 @@ const featureWidget = new Feature({
   spatialReference: activeView.spatialReference
 });
 
-// Create iframe for PDF
-const pdfIframe = document.createElement("iframe");
-pdfIframe.style.width = "100%";
-pdfIframe.style.height = "calc(100vh - 100px)";
-pdfIframe.style.border = "none";
-pdfIframe.style.display = "block";
-
 // Add iframe to feature widget container
-featureWidgetContainer.appendChild(pdfIframe);
+//const pdfIframe = document.createElement("iframe");
+//pdfIframe.style.width = "100%";
+//pdfIframe.style.height = "calc(101vh - 100px)";
+//pdfIframe.style.border = "none";
+//pdfIframe.style.display = "block";
+//featureWidgetContainer.appendChild(pdfIframe);
+
+// Add an iframe to the feature widget container for HTML content
+const htmlIframe = document.createElement("iframe");
+htmlIframe.style.width = "100%";
+htmlIframe.style.height = "calc(100vh - 100px)";
+htmlIframe.style.border = "none";
+
+
+htmlIframe.src = "./info.html";  
+featureWidgetContainer.appendChild(htmlIframe);
 
 const featureExpand = new Expand({
   view: activeView,
   content: featureWidgetContainer,
-  expanded: false,
+  expanded: true, // Ensure the widget starts as expanded
   expandIconClass: "esri-icon-layer-list",
   expandTooltip: "Feature Details"
+});
+
+// Dynamically add or remove the expanded class based on the widget's state
+featureExpand.watch("expanded", (expanded) => {
+  console.log('Expanded state changed to:', expanded);  // Debugging output
+  if (expanded) {
+    featureWidgetContainer.classList.add("feature-widget-container-expanded");
+  } else {
+    featureWidgetContainer.classList.remove("feature-widget-container-expanded");
+  }
 });
 
 // Add expand widget to the view
 activeView.ui.add(featureExpand, "top-right");
 
+// Debugging output to check initialization
+console.log("Feature widget added:", featureExpand);
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Create widgets
 const zoom = new Zoom({
   view: activeView
