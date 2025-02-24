@@ -346,7 +346,7 @@ htmlIframe.style.width = "100%";
 htmlIframe.style.height = "calc(100vh - 100px)";
 htmlIframe.style.border = "none";
 
-htmlIframe.src = "https://backupuccrn.github.io/atlas_backup_360/info.html" ;
+htmlIframe.src = "./atlas_backup_360/src/index.html" ;
 featureWidgetContainer.appendChild(htmlIframe);
 
 const featureExpand = new Expand({
