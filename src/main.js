@@ -354,9 +354,9 @@ htmlIframe.onload = function () {
     const iframeDoc = htmlIframe.contentDocument || htmlIframe.contentWindow.document;
     const citySelect = iframeDoc.getElementById("citySelect");
     const megaCitiesCheck = iframeDoc.getElementById("megaCitiesCheck");
-    const climateZoneSelect = iframeDoc.getElementById("climateZoneSelect");
+    const caseStudySelect = iframeDoc.getElementById("caseStudySelect"); //
 
-    if (!citySelect || !megaCitiesCheck || !climateZoneSelect) {
+    if (!citySelect || !megaCitiesCheck || !caseStudySelect) {
         console.error("Dropdowns not found in info.html");
         return;
     }
@@ -402,7 +402,7 @@ htmlIframe.onload = function () {
     // Handle Mega Cities checkbox
     megaCitiesCheck.addEventListener("change", () => {
         const isChecked = megaCitiesCheck.checked;
-        
+
         // Toggle visibility of mega cities
         megaCities.forEach(layer => {
             layer.visible = isChecked;
@@ -411,48 +411,24 @@ htmlIframe.onload = function () {
         console.log(isChecked ? "Mega Cities are now visible." : "Mega Cities are now hidden.");
     });
 
-    // Handle Climate Zone Filtering 
-    // Find the climate classification layer
-    const climateLayer = map.layers.find(layer => layer.title.includes("Köppen–Geiger-climate-classification"));
+    //  Populate Case Study Filter (Template)
+    const caseStudyOptions = ["Mitigation", "Adaptation", "Hybrid"];
 
-    if (climateLayer) {
-        // Query unique climate zones from the layer
-        climateLayer.when(() => {
-            const query = climateLayer.createQuery();
-            query.where = "1=1"; // Select all features
-            query.returnDistinctValues = true;
-            query.outFields = ["Untitled_5"];
+    caseStudyOptions.forEach(optionText => {
+        const option = iframeDoc.createElement("option");
+        option.value = optionText;
+        option.textContent = optionText;
+        caseStudySelect.appendChild(option);
+    });
 
-            climateLayer.queryFeatures(query).then((result) => {
-                result.features.forEach(feature => {
-                    const climateZone = feature.attributes.Untitled_5;
-                    const option = iframeDoc.createElement("option");
-                    option.value = climateZone;
-                    option.textContent = climateZone;
-                    climateZoneSelect.appendChild(option);
-                });
-            }).catch(error => console.error("Error querying climate zones:", error));
-        });
+    //  Handle Case Study Selection (Currently just logs selection)
+    caseStudySelect.addEventListener("change", () => {
+        const selectedCaseStudy = caseStudySelect.value;
+        console.log(`Case Study selected: ${selectedCaseStudy}`);
+        // 🚀 Future implementation: Apply filtering based on the case study type
+    });
 
-        // Handle Climate Zone Selection
-        climateZoneSelect.addEventListener("change", () => {
-            const selectedZone = climateZoneSelect.value;
-
-            if (selectedZone) {
-                climateLayer.definitionExpression = `Untitled_5 = '${selectedZone}'`;
-                climateLayer.visible = true;
-            } else {
-                climateLayer.definitionExpression = null; // Show all zones
-                climateLayer.visible = false;
-            }
-
-            console.log(`Climate Zone selected: ${selectedZone}`);
-        });
-    } else {
-        console.error("Climate classification layer not found.");
-    }
-
-    console.log("City filter, Mega Cities checkbox, and Climate Zone dropdown successfully injected into info.html");
+    console.log("City filter, Mega Cities checkbox, and Case Study dropdown successfully injected into info.html");
 };
 ///////////////////////////////////////////////////////////////////////////////////
 
