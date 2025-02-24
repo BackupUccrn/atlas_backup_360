@@ -20,11 +20,14 @@
 <body>
     <h1>Welcome to the Feature Information Widget</h1>
     <p>This section provides details about the selected feature.</p>
+    
     <ul>
         <li>Data Source: UCCRN</li>
         <li>blablabla</li>
         <li>2025</li>
-            <!-- City Filter Dropdown -->
+    </ul> <!-- ✅ Closing the unordered list properly -->
+
+    <!-- City Filter Dropdown -->
     <div id="cityFilterContainer" style="margin-top: 10px;">
         <label for="citySelect">Select a city:</label>
         <select id="citySelect" class="esri-input esri-select">
@@ -32,6 +35,15 @@
         </select>
     </div>
 
+    <!-- Mega Cities Checkbox -->
+    <div id="megaCitiesContainer" style="margin-top: 10px;">
+        <label for="megaCitiesCheck">
+            <input type="checkbox" id="megaCitiesCheck">
+            Mega Cities
+        </label>
+    </div>
+
 </body>
 </html>
+
 
