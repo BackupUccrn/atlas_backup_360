@@ -348,14 +348,15 @@ htmlIframe.style.border = "none";
 console.log("Attempting to load:", "./info.html");
 htmlIframe.src = "./info.html";
 featureWidgetContainer.appendChild(htmlIframe);
+/////////////////////////////////////////////////////////////////////////////////filter 
 
-// Wait for the iframe to load before modifying its content
 htmlIframe.onload = function () {
     const iframeDoc = htmlIframe.contentDocument || htmlIframe.contentWindow.document;
     const citySelect = iframeDoc.getElementById("citySelect");
+    const megaCitiesCheck = iframeDoc.getElementById("megaCitiesCheck");
 
-    if (!citySelect) {
-        console.error("City select dropdown not found in info.html");
+    if (!citySelect || !megaCitiesCheck) {
+        console.error("City select dropdown or Mega Cities checkbox not found in info.html");
         return;
     }
 
@@ -370,7 +371,10 @@ htmlIframe.onload = function () {
         { name: "Singapore", layer: saLayer, center: [103.8198, 1.3521], zoom: 11 }
     ];
 
-    // Populate dropdown with city names
+    // Define Mega Cities
+    const megaCities = [nycLayer, laLayer, mexLayer];
+
+    // Populate dropdown with city names from existing `cities` array
     cities.forEach(city => {
         const option = iframeDoc.createElement("option");
         option.value = city.name;
@@ -382,7 +386,6 @@ htmlIframe.onload = function () {
     citySelect.addEventListener("change", () => {
         const selectedCity = cities.find(c => c.name === citySelect.value);
         if (selectedCity) {
-            // Zoom to selected city
             activeView.goTo({
                 center: selectedCity.center,
                 zoom: selectedCity.zoom
@@ -395,8 +398,21 @@ htmlIframe.onload = function () {
         }
     });
 
-    console.log("City filter successfully injected into info.html");
+    // Handle Mega Cities checkbox
+    megaCitiesCheck.addEventListener("change", () => {
+        const isChecked = megaCitiesCheck.checked;
+        
+        // Toggle visibility of mega cities
+        megaCities.forEach(layer => {
+            layer.visible = isChecked;
+        });
+
+        console.log(isChecked ? "Mega Cities are now visible." : "Mega Cities are now hidden.");
+    });
+
+    console.log("City filter and Mega Cities checkbox successfully injected into info.html");
 };
+///////////////////////////////////////////////////////////////////////////////////
 
 const featureExpand = new Expand({
   view: activeView,
