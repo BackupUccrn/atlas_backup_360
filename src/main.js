@@ -400,7 +400,8 @@ htmlIframe.onload = function () {
     const megaCitiesCheck = iframeDoc.getElementById("megaCitiesCheck");
     const largeCitiesCheck = iframeDoc.getElementById("largeCitiesCheck");
     const caseStudySelect = iframeDoc.getElementById("caseStudySelect");
-
+    const provenanceSelect = iframeDoc.getElementById("provenanceSelect");
+  
     if (!citySelect || !megaCitiesCheck || !largeCitiesCheck || !caseStudySelect) {
         console.error("Dropdowns not found in info.html");
         return;
@@ -476,9 +477,25 @@ htmlIframe.onload = function () {
         const selectedCaseStudy = caseStudySelect.value;
         console.log(`Case Study selected: ${selectedCaseStudy}`);
     });
+//  Case Study Provenance Dropdown
+    const provenanceOptions = ["Peer-reviewed", 	"Government document", 	"City network", "Knowledge network", "Non-government organization", "Other"];
+
+    provenanceOptions.forEach(optionText => {
+        const option = iframeDoc.createElement("option");
+        option.value = optionText;
+        option.textContent = optionText;
+        provenanceSelect.appendChild(option);
+    });
+
+    // Case Study Type Selection (For Future Use)
+    provenanceSelect.addEventListener("change", () => {
+        const provenanceStudy = provenanceSelect.value;
+        console.log(`Case Study selected: ${provenanceStudy}`);
+    });
 
     console.log("City filter, Mega Cities, Large Cities, and Case Study dropdown successfully injected into info.html");
 };
+
 ///////////////////////////////////////////////////////////////////////////////////
 
 const featureExpand = new Expand({
