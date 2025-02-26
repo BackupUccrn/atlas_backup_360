@@ -120,35 +120,6 @@ population_2025.pixelFilter = function (pixelData) {
 };
 
 
-const map = new Map({
-  basemap: basemap,
-  layers: [] // Start with an empty list, add layers later
-});
-
-// 2Create the MapView
-const activeView = new MapView({
-  zoom: 2,
-  center: [2.35, 48.85], // Paris coordinates
-  container: "viewDiv",
-  map:map
-});
-
-// Create the Layer List widget
-const layerList = new LayerList({
-  view: activeView
-});
-
-//  Add Layer List UI to the top-right of the view
-activeView.ui.add(layerList, "top-right");
-
-// add the Population Raster Layer to the map
-map.add(population_2025);
-
-// Add the Population Layer to the Layer List
-layerList.operationalItems.add({
-  layer: population_2025,
-  title: "Population count 2025 GHSL (3arcsec)"
-});
 ///////////////////////////////////////////////////////////////population end
 const lecz_v3 = new ImageryLayer({
   url: "https://gis.earthdata.nasa.gov/image/rest/services/lecz/lecz_urban_rural_population_land_area_estimates_v3/ImageServer",
@@ -247,6 +218,12 @@ const map = new Map({
     attribution: "CIESIN, Columbia University"
   }
 });
+// Add the Population Layer to the Layer List
+layerList.operationalItems.add({
+  layer: population_2025,
+  title: "Population count 2025 GHSL (3arcsec)"
+});
+
 //////////////////////////////////////////////////////////////////checked boxes 
 // Load Mega City Layer with Custom Symbol
 const megaCityLayer = new GeoJSONLayer({
@@ -383,6 +360,19 @@ const activeView = new MapView({
     fillOpacity: 0
   }
 });
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Create UI elements like LayerList
+///const layerList = new LayerList({ view: activeView });
+//activeView.ui.add(layerList, "top-right");
+
+// Ensure Time Slider visibility updates with layers
+//function updateTimeSliderVisibility() {
+  //const hasVisibleTimeLayer = activeView.map.layers.some(layer => layer.visible && layer.timeInfo);
+  //timeSliderExpand.visible = hasVisibleTimeLayer;
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Create layer list widget with reordering enabled
 const layerList = new LayerList({
