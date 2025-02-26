@@ -11,8 +11,8 @@ import esriConfig from "@arcgis/core/config";
 import BasemapGallery from "@arcgis/core/widgets/BasemapGallery";
 import Legend from "@arcgis/core/widgets/Legend";
 import { uhiRenderer } from '../renderers/uhiRenderer.js';
-import { leczRenderer } from '../renderers/leczRenderer.js';
 import { popRenderer } from '../renderers/popRenderer.js';
+import { leczRenderer } from '../renderers/leczRenderer.js';
 import GeoJSONLayer from "@arcgis/core/layers/GeoJSONLayer";
 import Feature from "@arcgis/core/widgets/Feature";
 import MultidimensionalSubset from "@arcgis/core/layers/support/MultidimensionalSubset";
@@ -132,7 +132,6 @@ const ssp245 = new ImageryTileLayer({
   visible: false
 });
 
-
 // Create GeoJSON layers with correct relative paths
 const layerOptions = {
   selectionEnabled: false,
@@ -195,7 +194,7 @@ const saLayer = new GeoJSONLayer({
 // Create map with basemap and layers
 const map = new Map({
   basemap: basemap,
-  layers: [yceouhi_v4, lecz_v3, ssp245, population_2025 nycLayer, laLayer, copLayer, mexLayer, DurbanLayer, rioLayer, saLayer],
+  layers: [yceouhi_v4, population_2025, lecz_v3, ssp245, nycLayer, laLayer, copLayer, mexLayer, DurbanLayer, rioLayer, saLayer],
   // Add attribution
   portalItem: {
     attribution: "CIESIN, Columbia University"
@@ -254,8 +253,6 @@ Layer.fromPortalItem({
 }).then((layer) => {
   layer.visible = false; // Start with layer hidden
   map.add(layer);
-
-
 
   // Add layer to layer list
   layerList.operationalItems.add({
@@ -947,3 +944,4 @@ activeView.on("click", (event) => {
     console.error("Error identifying pixel value:", error);
   });
 });
+
