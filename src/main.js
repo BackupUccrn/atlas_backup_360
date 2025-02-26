@@ -218,11 +218,6 @@ const map = new Map({
     attribution: "CIESIN, Columbia University"
   }
 });
-// Add the Population Layer to the Layer List
-layerList.operationalItems.add({
-  layer: population_2025,
-  title: "Population count 2025 GHSL (3arcsec)"
-});
 
 //////////////////////////////////////////////////////////////////checked boxes 
 // Load Mega City Layer with Custom Symbol
@@ -360,7 +355,21 @@ const activeView = new MapView({
     fillOpacity: 0
   }
 });
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////population 
+const layerList = new LayerList({
+  view: activeView
+});
+activeView.ui.add(layerList, "top-right");
+
+// Ensure the view is ready before adding layers and updating UI elements
+activeView.when(() => {
+  // Add population_2025 to the map
+  map.add(population_2025);
+
+  // Ensure the Time Slider updates based on visible layers
+  updateTimeSliderVisibility();
+});
+////////////////////////////////////////////////////////////////////////////////////population
 // Create UI elements like LayerList
 ///const layerList = new LayerList({ view: activeView });
 //activeView.ui.add(layerList, "top-right");
@@ -369,8 +378,7 @@ const activeView = new MapView({
 //function updateTimeSliderVisibility() {
   //const hasVisibleTimeLayer = activeView.map.layers.some(layer => layer.visible && layer.timeInfo);
   //timeSliderExpand.visible = hasVisibleTimeLayer;
-}
-
+//}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -382,6 +390,8 @@ const layerList = new LayerList({
     const item = event.item;
   }
 });
+
+
 
 // Handle layer reordering actions
 layerList.on("trigger-action", (event) => {
