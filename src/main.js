@@ -87,9 +87,9 @@ const yceouhi_v4 = new ImageryLayer({
   },
 });
 ////////////////////////////////////////////////////////////////////////////////////////////////population
-import { popRenderer } from "./renderers/popRenderer.js";
 
-// ✅ Create Population Raster Layer
+
+// Create Population Raster Layer
 const population_2025 = new ImageryLayer({
   url: "https://tiledimageservices2.arcgis.com/IsDCghZ73NgoYoz5/arcgis/rest/services/Population_count_2025_100m_GHSL/ImageServer",
   renderer: popRenderer, 
@@ -104,7 +104,7 @@ const population_2025 = new ImageryLayer({
   },
 });
 
-// ✅ Apply `pixelFilter` to remove 0 values & NoData
+// Apply `pixelFilter` to remove 0 values & NoData
 population_2025.pixelFilter = function (pixelData) {
     if (pixelData && pixelData.pixelBlock) {
         let pixels = pixelData.pixelBlock.pixels[0];
@@ -119,7 +119,7 @@ population_2025.pixelFilter = function (pixelData) {
     }
 };
 
-// ✅ Ensure we correctly reference `map` and `layerList`
+// Ensure we correctly reference `map` and `layerList`
 map.add(population_2025);
 layerList.operationalItems.add({
     layer: population_2025,
