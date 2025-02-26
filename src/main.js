@@ -21,6 +21,7 @@ import ImageryTileLayer from "@arcgis/core/layers/ImageryTileLayer.js";
 import Layer from "@arcgis/core/layers/Layer";
 import Portal from "@arcgis/core/portal/Portal";
 import PortalGroup from "@arcgis/core/portal/PortalGroup";
+import RasterStretchRenderer from "@arcgis/core/renderers/RasterStretchRenderer.js";
 
 import "@esri/calcite-components/dist/calcite/calcite.css";
 import "./style.css";
