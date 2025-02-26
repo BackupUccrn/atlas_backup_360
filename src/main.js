@@ -115,10 +115,9 @@ const ssp245 = new ImageryTileLayer({
   visible: false
 });
 
-// Population Density Raster Layer with Standard Deviation Stretch and Transparency
 const populationRaster = new ImageryTileLayer({
     url: "https://tiledimageservices2.arcgis.com/IsDCghZ73NgoYoz5/arcgis/rest/services/Population_count_2025_100m_GHSL/ImageServer",  
-    title: "Population Density Raster",
+    title: "Population Count 2025 3arcsec GHSL",
     opacity: 1, 
     renderer: {
         type: "raster-stretch",
@@ -127,9 +126,9 @@ const populationRaster = new ImageryTileLayer({
         gamma: [1],  
         colorRamp: {
             type: "algorithmic",
-            fromColor: [255, 255, 255, 0],
-            toColor: [255, 140, 0, 255]  
-        },
+            fromColor: [255, 255, 255, 255], // White (Not Transparent)
+            toColor: [255, 140, 0, 255]  // Orange
+        }
     },
     pixelFilter: function(pixelData) {
         if (pixelData && pixelData.pixelBlock) {
@@ -139,15 +138,17 @@ const populationRaster = new ImageryTileLayer({
 
             for (let i = 0; i < numPixels; i++) {
                 if (pixels[i] === 0 || mask[i] === 0) {
-                    pixels[i] = NaN;  
+                    mask[i] = 0;  // 🔹 Make NoData & 0 values fully transparent
                 }
             }
         }
     }
 });
 
-//  Add to the Map 
-map.add(populationRaster);
+// Ensure the layer is added AFTER the map is initialized
+populationRaster.when(() => {
+    map.add(populationRaster);
+});
 
 // Create GeoJSON layers with correct relative paths
 const layerOptions = {
