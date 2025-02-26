@@ -89,36 +89,6 @@ const yceouhi_v4 = new ImageryLayer({
 ////////////////////////////////////////////////////////////////////////////////////////////////population
 
 
-// Create Population Raster Layer
-const population_2025 = new ImageryLayer({
-  url: "https://tiledimageservices2.arcgis.com/IsDCghZ73NgoYoz5/arcgis/rest/services/Population_count_2025_100m_GHSL/ImageServer",
-  renderer: popRenderer, 
-  opacity: 0.7,
-  title: "Population count 2025 GHSL (3arcsec)",
-  useViewTime: true,
-  popupEnabled: true,
-  popupTemplate: {
-    title: "Population count 2025 GHSL_3arcsec",
-    content: "{Raster.ServicePixelValue}",
-    returnPixelValues: false
-  },
-});
-
-// Apply `pixelFilter` to remove 0 values & NoData
-population_2025.pixelFilter = function (pixelData) {
-    if (pixelData && pixelData.pixelBlock) {
-        let pixels = pixelData.pixelBlock.pixels[0];
-        let mask = pixelData.pixelBlock.mask;
-        let numPixels = pixelData.pixelBlock.width * pixelData.pixelBlock.height;
-
-        for (let i = 0; i < numPixels; i++) {
-            if (pixels[i] === 0 || mask[i] === 0) {
-                mask[i] = 0;  // Make pixel transparent
-            }
-        }
-    }
-};
-
 
 ///////////////////////////////////////////////////////////////population end
 const lecz_v3 = new ImageryLayer({
@@ -212,7 +182,7 @@ const saLayer = new GeoJSONLayer({
 // Create map with basemap and layers
 const map = new Map({
   basemap: basemap,
-  layers: [yceouhi_v4, population_2025, lecz_v3, ssp245, nycLayer, laLayer, copLayer, mexLayer, DurbanLayer, rioLayer, saLayer],
+  layers: [yceouhi_v4, lecz_v3, ssp245, nycLayer, laLayer, copLayer, mexLayer, DurbanLayer, rioLayer, saLayer],
   // Add attribution
   portalItem: {
     attribution: "CIESIN, Columbia University"
@@ -298,8 +268,56 @@ Layer.fromPortalItem({
 }).catch((error) => {
   console.error("Error loading Land Cover layer:", error);
 });
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////population 
+Layer.fromPortalItem({
+  portalItem: {
+    id: "affb5e2a4a014df89467f661a472d0f0" 
+  }
+}).then((layer) => {
+  // Apply renderer manually if needed
+  if (layer.renderer === undefined && layer.type === "imagery") {
+    layer.renderer = popRenderer;  
+  }
 
+  // Apply the pixel filter to remove zeros and NoData values
+  layer.pixelFilter = function (pixelData) {
+    if (pixelData && pixelData.pixelBlock) {
+      let pixels = pixelData.pixelBlock.pixels[0];
+      let mask = pixelData.pixelBlock.mask;
+      let numPixels = pixelData.pixelBlock.width * pixelData.pixelBlock.height;
 
+      for (let i = 0; i < numPixels; i++) {
+        if (pixels[i] === 0 || mask[i] === 0) {
+          mask[i] = 0;  // Make pixel transparent
+        }
+      }
+    }
+  };
+
+  // Set other properties
+  layer.opacity = 0.7;
+  layer.title = "Population count 2025 GHSL (3arcsec)";
+  layer.useViewTime = true;
+  layer.popupEnabled = true;
+  layer.popupTemplate = {
+    title: "Population count 2025 GHSL_3arcsec",
+    content: "{Raster.ServicePixelValue}",
+    returnPixelValues: false
+  };
+
+  // Add to the map
+  map.add(layer);
+
+  // Assign it to `population_2025` for later reference
+  population_2025 = layer;
+
+  // Ensure the Time Slider updates based on visible layers
+  updateTimeSliderVisibility();
+}).catch((error) => {
+  console.error("Error loading Population 2025 layer:", error);
+});
+
+/////////////////////////////////////////////////////////////////////////////////end pop 
 // Setup portal and group query
 const portal = new Portal();
 portal.load().then(() => {
@@ -355,7 +373,7 @@ const activeView = new MapView({
     fillOpacity: 0
   }
 });
-//////////////////////////////////////////////////////////////////////////////////population 
+
 
 const layerList = new LayerList({
   view: activeView,
@@ -366,27 +384,6 @@ const layerList = new LayerList({
 });
 activeView.ui.add(layerList, "top-right");
 
-// Ensure the view is ready before adding layers and updating UI elements
-activeView.when(() => {
-  // Add population_2025 to the map
-  map.add(population_2025);
-
-  // Ensure the Time Slider updates based on visible layers
-  updateTimeSliderVisibility();
-});
-////////////////////////////////////////////////////////////////////////////////////population
-// Create UI elements like LayerList
-///const layerList = new LayerList({ view: activeView });
-//activeView.ui.add(layerList, "top-right");
-
-// Ensure Time Slider visibility updates with layers
-//function updateTimeSliderVisibility() {
-  //const hasVisibleTimeLayer = activeView.map.layers.some(layer => layer.visible && layer.timeInfo);
-  //timeSliderExpand.visible = hasVisibleTimeLayer;
-//}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////layer list was removed and adjusted up top 
 
 // Handle layer reordering actions
 layerList.on("trigger-action", (event) => {
