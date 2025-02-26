@@ -119,11 +119,22 @@ population_2025.pixelFilter = function (pixelData) {
     }
 };
 
-// Ensure we correctly reference `map` and `layerList`
+
+const map = new Map({
+  basemap: basemap,
+  layers: [] // Start empty, add layers later
+});
+
+
+const layerList = new LayerList({
+  view: activeView
+});
+
+
 map.add(population_2025);
 layerList.operationalItems.add({
-    layer: population_2025,
-    title: "Population count 2025 GHSL (3arcsec)"
+  layer: population_2025,
+  title: "Population count 2025 GHSL (3arcsec)"
 });
 ///////////////////////////////////////////////////////////////population end
 const lecz_v3 = new ImageryLayer({
