@@ -274,25 +274,38 @@ Layer.fromPortalItem({
     id: "05678b4102ce450987c00ddf3f66afd3" 
   }
 }).then((layer) => {
-  // Apply renderer manually if needed
-  if (layer.renderer === undefined && layer.type === "imagery") {
-    layer.renderer = popRenderer;  
-  }
+  // Ensure it's an ImageryLayer
+  if (layer.type === "imagery") {
+    layer.renderer = new RasterStretchRenderer({
+      stretchType: "standard-deviation", // Apply standard deviation stretch
+      numberOfStandardDeviations: 2,  // 2 Standard Deviations
+      gamma: [3],  // Gamma correction set to 3
+      useGamma: true,
+      dynamicRangeAdjustment: false, 
 
-  // Apply the pixel filter to remove zeros and NoData values
-  layer.pixelFilter = function (pixelData) {
-    if (pixelData && pixelData.pixelBlock) {
-      let pixels = pixelData.pixelBlock.pixels[0];
-      let mask = pixelData.pixelBlock.mask;
-      let numPixels = pixelData.pixelBlock.width * pixelData.pixelBlock.height;
+      // Define the color ramp for visualization
+      colorRamp: {
+        type: "algorithmic",
+        fromColor: [255, 255, 255, 0], // Transparent for NoData (0)
+        toColor: [255, 140, 0, 255] // Orange for population
+      }
+    });
 
-      for (let i = 0; i < numPixels; i++) {
-        if (pixels[i] === 0 || mask[i] === 0) {
-          mask[i] = 0;  // Make pixel transparent
+    // Filter out NoData and zero values
+    layer.pixelFilter = function (pixelData) {
+      if (pixelData && pixelData.pixelBlock) {
+        let pixels = pixelData.pixelBlock.pixels[0];
+        let mask = pixelData.pixelBlock.mask;
+        let numPixels = pixelData.pixelBlock.width * pixelData.pixelBlock.height;
+
+        for (let i = 0; i < numPixels; i++) {
+          if (pixels[i] <= 0 || mask[i] === 0) {  
+            mask[i] = 0;  // Make pixel fully transparent
+          }
         }
       }
-    }
-  };
+    };
+  }
 
   // Set other properties
   layer.opacity = 0.7;
@@ -308,15 +321,11 @@ Layer.fromPortalItem({
   // Add to the map
   map.add(layer);
 
-  // Assign it to `population_2025` for later reference
-  population_2025 = layer;
-
-  // Ensure the Time Slider updates based on visible layers
-  updateTimeSliderVisibility();
+  // Assign it to `population_2025` for later use
+  population_2025 = layer;  
 }).catch((error) => {
   console.error("Error loading Population 2025 layer:", error);
 });
-
 /////////////////////////////////////////////////////////////////////////////////end pop 
 // Setup portal and group query
 const portal = new Portal();
