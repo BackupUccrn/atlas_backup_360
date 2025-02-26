@@ -271,13 +271,15 @@ Layer.fromPortalItem({
     id: "05678b4102ce450987c00ddf3f66afd3" 
   }
 }).then((layer) => {
-  // 🚀 Apply Renderer
+  //  Apply Renderer
   if (layer.type === "imagery") {
     layer.renderer = popRenderer;
+       console.log("Renderer applied:", layer.renderer); 
   }
 
-  // 🚀 Apply Pixel Filter (Hide NoData & Zero Values)
+  //  Apply Pixel Filter (Hide NoData & Zero Values)
   layer.pixelFilter = function (pixelData) {
+    console.log("Applying pixel filter");
     if (pixelData && pixelData.pixelBlock) {
       let pixels = pixelData.pixelBlock.pixels[0];
       let mask = pixelData.pixelBlock.mask;
@@ -291,7 +293,7 @@ Layer.fromPortalItem({
     }
   };
 
-  // 🚀 Apply Other Properties
+  //  Apply Other Properties
   layer.opacity = 0.7;
   layer.title = "Population count 2025 GHSL (3arcsec)";
   layer.useViewTime = true;
@@ -302,10 +304,10 @@ Layer.fromPortalItem({
     returnPixelValues: false
   };
 
-  // 🚀 Add to the map
+  //  Add to the map
   map.add(layer);
 
-  // 🚀 Assign it to the variable
+  //  Assign it to the variable
   population_2025 = layer;  
 }).catch((error) => {
   console.error("Error loading Population 2025 layer:", error);
