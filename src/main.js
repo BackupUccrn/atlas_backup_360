@@ -12,6 +12,7 @@ import BasemapGallery from "@arcgis/core/widgets/BasemapGallery";
 import Legend from "@arcgis/core/widgets/Legend";
 import { uhiRenderer } from '../renderers/uhiRenderer.js';
 import { leczRenderer } from '../renderers/leczRenderer.js';
+import { popRenderer } from '../renderers/popRenderer.js';
 import GeoJSONLayer from "@arcgis/core/layers/GeoJSONLayer";
 import Feature from "@arcgis/core/widgets/Feature";
 import MultidimensionalSubset from "@arcgis/core/layers/support/MultidimensionalSubset";
@@ -82,6 +83,22 @@ const yceouhi_v4 = new ImageryLayer({
   popupTemplate: {
     title: "UHI Values",
     content: "{Raster.ServicePixelValue} Celcius",
+    returnPixelValues: false
+  },
+});
+
+// Create imagery layers
+const population_2025 = new ImageryLayer({
+  url: "https://tiledimageservices2.arcgis.com/IsDCghZ73NgoYoz5/arcgis/rest/services/Population_count_2025_100m_GHSL/ImageServer",
+  renderer: popRenderer,
+  opacity: 0.7,
+  title: "Population count 2025 GHSL_3arcsec",
+  multidimensionalSubset: multidimensionalSubset,
+  useViewTime: true,
+  popupEnabled: true,
+  popupTemplate: {
+    title: "Population count 2025 GHSL_3arcsec",
+    content: "{Raster.ServicePixelValue}",
     returnPixelValues: false
   },
 });
@@ -178,7 +195,7 @@ const saLayer = new GeoJSONLayer({
 // Create map with basemap and layers
 const map = new Map({
   basemap: basemap,
-  layers: [yceouhi_v4, lecz_v3, ssp245, nycLayer, laLayer, copLayer, mexLayer, DurbanLayer, rioLayer, saLayer],
+  layers: [yceouhi_v4, lecz_v3, ssp245, population_2025 nycLayer, laLayer, copLayer, mexLayer, DurbanLayer, rioLayer, saLayer],
   // Add attribution
   portalItem: {
     attribution: "CIESIN, Columbia University"
@@ -238,55 +255,7 @@ Layer.fromPortalItem({
   layer.visible = false; // Start with layer hidden
   map.add(layer);
 
-  // Add Population Raster Layer with Proper Visualization
-Layer.fromPortalItem({
-  portalItem: {
-    id: "affb5e2a4a014df89467f661a472d0f0"  
-  }
-}).then((layer) => {
-  layer.visible = true; 
-  layer.opacity = 1; 
 
-  // Apply Standard Deviation Stretch and Gamma Correction
-  layer.renderer = {
-    type: "raster-stretch",
-    stretchType: "standardDeviation",
-    numberOfStandardDeviations: 2, 
-    gamma: [1],  
-    colorRamp: {
-      type: "algorithmic",
-      fromColor: [255, 255, 255, 0],  
-      toColor: [255, 140, 0, 255] 
-    }
-  };
-
-  // Apply NoData and 0-Value Transparency
-  layer.pixelFilter = function(pixelData) {
-    if (pixelData && pixelData.pixelBlock) {
-      let pixels = pixelData.pixelBlock.pixels[0];
-      let mask = pixelData.pixelBlock.mask;
-      let numPixels = pixelData.pixelBlock.width * pixelData.pixelBlock.height;
-
-      for (let i = 0; i < numPixels; i++) {
-        if (pixels[i] === 0 || mask[i] === 0) {
-          mask[i] = 0; 
-        }
-      }
-    }
-  };
-
-  // Add Layer to the Map
-  map.add(layer);
-
-  // Add to Layer List (Optional)
-  layerList.operationalItems.add({
-    layer: layer,
-    title: "Population count 2025 GHSL (3arcsec)"
-  });
-
-}).catch((error) => {
-  console.error("Error loading Population Raster layer:", error);
-});
 
   // Add layer to layer list
   layerList.operationalItems.add({
