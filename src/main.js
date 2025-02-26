@@ -115,6 +115,40 @@ const ssp245 = new ImageryTileLayer({
   visible: false
 });
 
+// Population Density Raster Layer with Standard Deviation Stretch and Transparency
+const populationRaster = new ImageryTileLayer({
+    url: "https://tiledimageservices2.arcgis.com/IsDCghZ73NgoYoz5/arcgis/rest/services/Population_count_2025_100m_GHSL/ImageServer",  
+    title: "Population Density Raster",
+    opacity: 1, 
+    renderer: {
+        type: "raster-stretch",
+        stretchType: "standardDeviation",
+        numberOfStandardDeviations: 2, 
+        gamma: [1],  
+        colorRamp: {
+            type: "algorithmic",
+            fromColor: [255, 255, 255, 0],
+            toColor: [255, 140, 0, 255]  
+        },
+    },
+    pixelFilter: function(pixelData) {
+        if (pixelData && pixelData.pixelBlock) {
+            let pixels = pixelData.pixelBlock.pixels[0];
+            let mask = pixelData.pixelBlock.mask;
+            let numPixels = pixelData.pixelBlock.width * pixelData.pixelBlock.height;
+
+            for (let i = 0; i < numPixels; i++) {
+                if (pixels[i] === 0 || mask[i] === 0) {
+                    pixels[i] = NaN;  
+                }
+            }
+        }
+    }
+});
+
+//  Add to the Map 
+map.add(populationRaster);
+
 // Create GeoJSON layers with correct relative paths
 const layerOptions = {
   selectionEnabled: false,
@@ -177,7 +211,7 @@ const saLayer = new GeoJSONLayer({
 // Create map with basemap and layers
 const map = new Map({
   basemap: basemap,
-  layers: [yceouhi_v4, lecz_v3, ssp245, nycLayer, laLayer, copLayer, mexLayer, DurbanLayer, rioLayer, saLayer],
+  layers: [yceouhi_v4, lecz_v3, ssp245, populationRaster, nycLayer, laLayer, copLayer, mexLayer, DurbanLayer, rioLayer, saLayer],
   // Add attribution
   portalItem: {
     attribution: "CIESIN, Columbia University"
