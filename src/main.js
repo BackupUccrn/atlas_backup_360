@@ -271,29 +271,50 @@ Layer.fromPortalItem({
     id: "53b1f6e74f054deb867e2d624f9b0851" 
   }
 }).then((layer) => {
-  //  Apply Renderer
+  console.log("Population layer loaded:", layer);
+
+  //  Ensure layer is of imagery type
   if (layer.type === "imagery") {
-    layer.renderer = popRenderer;
-       console.log("Renderer applied:", layer.renderer); 
+    console.log("Applying custom statistics renderer...");
+
+    // Extract band statistics from the layer
+    const bandStat = layer.rasterInfo.statistics[0]; // Get statistics for the first band
+
+    //  Apply Raster Stretch Renderer with customStatistics
+    layer.renderer = new RasterStretchRenderer({
+      stretchType: "min-max", // Linear stretch from min to max
+      useGamma: true, // Enable Gamma Correction
+      gamma: [3], // Apply gamma correction at 3
+
+      // Apply customStatistics (instead of statistics)
+      customStatistics: [{
+        min: 1, // Filter out zero and NoData
+        max: bandStat.max, // Use the maximum from the dataset
+        avg: bandStat.avg, // Maintain the dataset’s average
+        stddev: bandStat.stddev // Use standard deviation from dataset
+      }]
+    });
+
+    console.log("Renderer applied:", layer.renderer);
   }
 
-  //  Apply Pixel Filter (Hide NoData & Zero Values)
+  // Apply Pixel Filter (Hides 0 and NoData)
   layer.pixelFilter = function (pixelData) {
-    console.log("Applying pixel filter");
+    console.log("Applying pixel filter...");
     if (pixelData && pixelData.pixelBlock) {
       let pixels = pixelData.pixelBlock.pixels[0];
       let mask = pixelData.pixelBlock.mask;
       let numPixels = pixelData.pixelBlock.width * pixelData.pixelBlock.height;
 
       for (let i = 0; i < numPixels; i++) {
-        if (pixels[i] === 0 || mask[i] === 0) {
-          mask[i] = 0;  // Hide 0 and NoData values
+        if (pixels[i] < 1 || mask[i] === 0) { 
+          mask[i] = 0;  // Hide values <1
         }
       }
     }
   };
 
-  //  Apply Other Properties
+  //  Additional Properties
   layer.opacity = 0.7;
   layer.title = "Population count 2025 GHSL (3arcsec)";
   layer.useViewTime = true;
@@ -304,11 +325,12 @@ Layer.fromPortalItem({
     returnPixelValues: false
   };
 
-  //  Add to the map
+  //  Add Layer to Map
   map.add(layer);
 
-  //  Assign it to the variable
-  population_2025 = layer;  
+  // Assign it to a variable for global reference
+  population_2025 = layer;
+
 }).catch((error) => {
   console.error("Error loading Population 2025 layer:", error);
 });
