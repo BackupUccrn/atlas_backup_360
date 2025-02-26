@@ -86,14 +86,12 @@ const yceouhi_v4 = new ImageryLayer({
     returnPixelValues: false
   },
 });
-
-// Create imagery layers
+////////////////////////////////////////////////////////////////////////////////////////////////population
 const population_2025 = new ImageryLayer({
   url: "https://tiledimageservices2.arcgis.com/IsDCghZ73NgoYoz5/arcgis/rest/services/Population_count_2025_100m_GHSL/ImageServer",
-  renderer: popRenderer,
+  renderer: popRenderer,  
   opacity: 0.7,
   title: "Population count 2025 GHSL_3arcsec",
-  multidimensionalSubset: multidimensionalSubset,
   useViewTime: true,
   popupEnabled: true,
   popupTemplate: {
@@ -103,6 +101,30 @@ const population_2025 = new ImageryLayer({
   },
 });
 
+// `pixelFilter` to make 0 and NoData transparent
+population_2025.pixelFilter = function (pixelData) {
+    if (pixelData && pixelData.pixelBlock) {
+        let pixels = pixelData.pixelBlock.pixels[0];
+        let mask = pixelData.pixelBlock.mask;
+        let numPixels = pixelData.pixelBlock.width * pixelData.pixelBlock.height;
+
+        for (let i = 0; i < numPixels; i++) {
+            if (pixels[i] === 0 || mask[i] === 0) {
+                mask[i] = 0;  // Make pixel transparent
+            }
+        }
+    }
+};
+
+// Add to the Map
+map.add(population_2025);
+
+// Add to Layer List
+layerList.operationalItems.add({
+    layer: population_2025,
+    title: "Population count 2025 GHSL (3arcsec)"
+});
+///////////////////////////////////////////////////////////////population end
 const lecz_v3 = new ImageryLayer({
   url: "https://gis.earthdata.nasa.gov/image/rest/services/lecz/lecz_urban_rural_population_land_area_estimates_v3/ImageServer",
   renderer: leczRenderer,
