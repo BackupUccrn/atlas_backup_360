@@ -356,8 +356,13 @@ const activeView = new MapView({
   }
 });
 //////////////////////////////////////////////////////////////////////////////////population 
+
 const layerList = new LayerList({
-  view: activeView
+  view: activeView,
+  dragEnabled: true, // Enable drag and drop
+  listItemCreatedFunction: (event) => {
+    const item = event.item;
+  }
 });
 activeView.ui.add(layerList, "top-right");
 
@@ -381,17 +386,7 @@ activeView.when(() => {
 //}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-// Create layer list widget with reordering enabled
-const layerList = new LayerList({
-  view: activeView,
-  dragEnabled: true, // Enable drag and drop
-  listItemCreatedFunction: (event) => {
-    const item = event.item;
-  }
-});
-
-
+////////layer list was removed and adjusted up top 
 
 // Handle layer reordering actions
 layerList.on("trigger-action", (event) => {
