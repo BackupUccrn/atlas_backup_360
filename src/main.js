@@ -87,11 +87,7 @@ const yceouhi_v4 = new ImageryLayer({
     returnPixelValues: false
   },
 });
-////////////////////////////////////////////////////////////////////////////////////////////////population
 
-
-
-///////////////////////////////////////////////////////////////population end
 const lecz_v3 = new ImageryLayer({
   url: "https://gis.earthdata.nasa.gov/image/rest/services/lecz/lecz_urban_rural_population_land_area_estimates_v3/ImageServer",
   renderer: leczRenderer,
@@ -275,40 +271,27 @@ Layer.fromPortalItem({
     id: "05678b4102ce450987c00ddf3f66afd3" 
   }
 }).then((layer) => {
-  // Ensure it's an ImageryLayer
+  // 🚀 Apply Renderer
   if (layer.type === "imagery") {
-    layer.renderer = new RasterStretchRenderer({
-      stretchType: "standard-deviation", // Apply standard deviation stretch
-      numberOfStandardDeviations: 2,  // 2 Standard Deviations
-      gamma: [3],  // Gamma correction set to 3
-      useGamma: true,
-      dynamicRangeAdjustment: false, 
-
-      // Define the color ramp for visualization
-      colorRamp: {
-        type: "algorithmic",
-        fromColor: [255, 255, 255, 0], // Transparent for NoData (0)
-        toColor: [255, 140, 0, 255] // Orange for population
-      }
-    });
-
-    // Filter out NoData and zero values
-    layer.pixelFilter = function (pixelData) {
-      if (pixelData && pixelData.pixelBlock) {
-        let pixels = pixelData.pixelBlock.pixels[0];
-        let mask = pixelData.pixelBlock.mask;
-        let numPixels = pixelData.pixelBlock.width * pixelData.pixelBlock.height;
-
-        for (let i = 0; i < numPixels; i++) {
-          if (pixels[i] <= 0 || mask[i] === 0) {  
-            mask[i] = 0;  // Make pixel fully transparent
-          }
-        }
-      }
-    };
+    layer.renderer = popRenderer;
   }
 
-  // Set other properties
+  // 🚀 Apply Pixel Filter (Hide NoData & Zero Values)
+  layer.pixelFilter = function (pixelData) {
+    if (pixelData && pixelData.pixelBlock) {
+      let pixels = pixelData.pixelBlock.pixels[0];
+      let mask = pixelData.pixelBlock.mask;
+      let numPixels = pixelData.pixelBlock.width * pixelData.pixelBlock.height;
+
+      for (let i = 0; i < numPixels; i++) {
+        if (pixels[i] === 0 || mask[i] === 0) {
+          mask[i] = 0;  // Hide 0 and NoData values
+        }
+      }
+    }
+  };
+
+  // 🚀 Apply Other Properties
   layer.opacity = 0.7;
   layer.title = "Population count 2025 GHSL (3arcsec)";
   layer.useViewTime = true;
@@ -319,14 +302,15 @@ Layer.fromPortalItem({
     returnPixelValues: false
   };
 
-  // Add to the map
+  // 🚀 Add to the map
   map.add(layer);
 
-  // Assign it to `population_2025` for later use
+  // 🚀 Assign it to the variable
   population_2025 = layer;  
 }).catch((error) => {
   console.error("Error loading Population 2025 layer:", error);
 });
+
 /////////////////////////////////////////////////////////////////////////////////end pop 
 // Setup portal and group query
 const portal = new Portal();
