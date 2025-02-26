@@ -1,4 +1,4 @@
-import RasterStretchRenderer from "@arcgis/core/renderers/RasterStretchRenderer";
+import RasterStretchRenderer from "@arcgis/core/renderers/RasterStretchRenderer.js";
 
 export const popRenderer = new RasterStretchRenderer({
     stretchType: "standard-deviation",
