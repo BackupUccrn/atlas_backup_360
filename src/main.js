@@ -393,7 +393,7 @@ function zoomToCityAndShowPDF(cityName) {
     pdfIframe.src = `./pdfs/${city.pdf}#zoom=85`;
     pdfIframe.style.display = "block";
 }
-
+map.reorder(megaCityLayer, map.layers.length - 1);
 ///////////////////////////////////////////////////////////////checked boxes end 
 
 ///////////////////////////////////////////////////////////////endpdf
