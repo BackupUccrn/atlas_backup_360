@@ -612,103 +612,141 @@ function closeCurrentWidget() {
 }
 
 ////////////////////////////////////////////////////////////////////////pdf
-// Function to update the PDF iframe source based on the city
+
+// Create feature widget container and PDF iframe
+const featureWidgetContainer = document.createElement("div");
+featureWidgetContainer.className = "feature-widget-container";
+
+// Ensure pdfIframe is properly initialized
+let pdfIframe = document.createElement("iframe");
+pdfIframe.style.width = "100%";
+pdfIframe.style.height = "100%";
+pdfIframe.style.border = "none";
+pdfIframe.style.display = "block";
+
+// Append iframe to the feature widget container
+featureWidgetContainer.appendChild(pdfIframe);
+
+// Feature Expand widget for displaying city PDFs
+const featureExpand = new Expand({
+    view: activeView,
+    content: featureWidgetContainer,
+    expanded: false,
+    expandIconClass: "esri-icon-documentation",
+    expandTooltip: "View City Report"
+});
+activeView.ui.add(featureExpand, "top-right");
+
+// Function to update the PDF iframe source based on the clicked city
 function updatePdfIframe(city) {
-  const pdfBasePath = "./public/pdfs/";
-  let pdfPath = null;
+    const pdfBasePath = "./pdfs/"; // Ensure this matches the actual file structure
 
-  // Map city names to their PDF paths
-  const cityPdfMap = {
-    "New York City": "nyc-test.pdf",
-    "Los Angeles City": "la-test.pdf",
-    "Mexico City": "mex-test.pdf",
-    "Copenhagen": "cop-test.pdf", // Large City
-  };
+    // Map city names to their respective PDF files
+    const cityPdfMap = {
+        "New York City": "nyc-test.pdf",
+        "Los Angeles City": "la-test.pdf",
+        "Copenhagen": "cop-test.pdf",
+        "Mexico City": "mex-test.pdf"
+    };
 
-  // Check if the city exists in our mapping
-  if (city in cityPdfMap) {
-    pdfPath = `${pdfBasePath}${cityPdfMap[city]}#zoom=35`;
-  }
+    // Ensure the city exists in the mapping
+    if (!(city in cityPdfMap)) {
+        console.error(`No PDF found for ${city}`);
+        return;
+    }
 
-  // If no valid PDF path is found, return
-  if (!pdfPath) {
-    console.error(`No PDF found for ${city}`);
-    return;
-  }
+    // Ensure pdfIframe is defined before updating its src
+    if (!pdfIframe) {
+        console.error("pdfIframe is not defined!");
+        return;
+    }
 
-  // Ensure pdfIframe is defined
-  if (!pdfIframe) {
-    console.error("pdfIframe is not defined!");
-    return;
-  }
+    // Construct the PDF path and update the iframe
+    const pdfPath = `${pdfBasePath}${cityPdfMap[city]}#zoom=35`;
+    console.log(`Loading PDF for ${city}: ${pdfPath}`);
+    pdfIframe.src = pdfPath;
 
-  // Set PDF source
-  console.log(`Loading PDF for ${city}: ${pdfPath}`);
-  pdfIframe.src = pdfPath;
-
-  // Handle potential loading errors
-  pdfIframe.onerror = () => {
-    console.error(`Failed to load PDF for ${city}`);
-  };
+    // Handle potential errors if the PDF fails to load
+    pdfIframe.onerror = () => {
+        console.error(`Failed to load PDF for ${city}`);
+    };
 }
 
-// Function to handle clicks on Mega City Layer (New York, LA, Mexico)
+// Function to handle clicks on Mega City Layer (New York, LA, Mexico City)
 function handleMegaCityClick(event) {
-  activeView.hitTest(event).then((response) => {
-    const results = response.results;
+    activeView.hitTest(event).then((response) => {
+        const results = response.results;
 
-    if (results.length > 0) {
-      const graphic = results[0].graphic;
-
-      // Ensure this is the Mega City layer
-      if (graphic && graphic.layer === megaCityLayer) {
-        const cityName = graphic.attributes?.name; // Ensure the city name attribute matches your GeoJSON field
-
-        if (["New York City", "Los Angeles City", "Mexico City"].includes(cityName)) {
-          console.log(`${cityName} clicked, loading PDF...`);
-          updatePdfIframe(cityName);
-          featureExpand.expanded = true;
-          currentOpenWidget = featureExpand;
-        } else {
-          console.log(`Clicked on another mega city: ${cityName}`);
+        if (results.length > 0) {
+            const graphic = results[0].graphic;
+            if (graphic && graphic.layer === megaCityLayer) {
+                const cityName = graphic.attributes?.name;
+                if (["New York City", "Los Angeles City", "Mexico City"].includes(cityName)) {
+                    console.log(`${cityName} clicked, loading PDF...`);
+                    updatePdfIframe(cityName);
+                    featureExpand.expanded = true;
+                }
+            }
         }
-      }
-    }
-  });
+    });
 }
 
 // Function to handle clicks on Large City Layer (Copenhagen)
 function handleLargeCityClick(event) {
-  activeView.hitTest(event).then((response) => {
-    const results = response.results;
+    activeView.hitTest(event).then((response) => {
+        const results = response.results;
 
-    if (results.length > 0) {
-      const graphic = results[0].graphic;
-
-      // Ensure this is the Large City layer
-      if (graphic && graphic.layer === largeCityLayer) {
-        const cityName = graphic.attributes?.name; // Ensure the city name attribute matches your GeoJSON field
-
-        if (cityName === "Copenhagen") {
-          console.log("Copenhagen clicked, loading PDF...");
-          updatePdfIframe(cityName);
-          featureExpand.expanded = true;
-          currentOpenWidget = featureExpand;
-        } else {
-          console.log(`Clicked on another large city: ${cityName}`);
+        if (results.length > 0) {
+            const graphic = results[0].graphic;
+            if (graphic && graphic.layer === largeCityLayer) {
+                const cityName = graphic.attributes?.name;
+                if (cityName === "Copenhagen") {
+                    console.log("Copenhagen clicked, loading PDF...");
+                    updatePdfIframe(cityName);
+                    featureExpand.expanded = true;
+                }
+            }
         }
-      }
-    }
-  });
+    });
 }
 
-// Attach click event listeners for Mega Cities and Large Cities
-activeView.whenLayerView(megaCityLayer).then(() => {
-  activeView.on("click", handleMegaCityClick);
-});
+// Ensure event listeners are only added once
+if (!megaCityLayer.eventListenerAttached) {
+    activeView.whenLayerView(megaCityLayer).then(() => {
+        activeView.on("click", handleMegaCityClick);
+    });
+    megaCityLayer.eventListenerAttached = true;
+}
 
-activeView.whenLayerView(largeCityLayer).then(() => {
-  activeView.on("click", handleLargeCityClick);
+if (!largeCityLayer.eventListenerAttached) {
+    activeView.whenLayerView(largeCityLayer).then(() => {
+        activeView.on("click", handleLargeCityClick);
+    });
+    largeCityLayer.eventListenerAttached = true;
+}
+
+// Search widget for cities
+const searchWidget = new Search({
+    view: activeView,
+    includeDefaultSources: false,
+    sources: [
+        { layer: nycLayer, searchFields: ["name"], displayField: "name", exactMatch: false, outFields: ["*"], name: "New York City" },
+        { layer: laLayer, searchFields: ["name"], displayField: "name", exactMatch: false, outFields: ["*"], name: "Los Angeles" },
+        { layer: copLayer, searchFields: ["name"], displayField: "name", exactMatch: false, outFields: ["*"], name: "Copenhagen" },
+        { layer: mexLayer, searchFields: ["name"], displayField: "name", exactMatch: false, outFields: ["*"], name: "Mexico City" }
+    ],
+    popupEnabled: false
+});
+const searchExpand = new Expand({ view: activeView, content: searchWidget, expanded: false, expandIconClass: "esri-icon-search" });
+activeView.ui.add(searchExpand, "top-right");
+
+// Add click handler to close feature widget when clicking outside
+activeView.on("click", (event) => {
+    activeView.hitTest(event).then((response) => {
+        if (response.results.length === 0 && featureExpand.expanded) {
+            featureExpand.expanded = false;
+        }
+    });
 });
 
 
