@@ -624,15 +624,7 @@ pdfIframe.style.display = "block";
 // Append iframe to the container
 featureWidgetContainer.appendChild(pdfIframe);
 
-// Feature Expand widget for displaying city PDFs
-const featureExpand = new Expand({
-    view: activeView,
-    content: featureWidgetContainer,
-    expanded: false,
-    expandIconClass: "esri-icon-documentation",
-    expandTooltip: "View City Report"
-});
-activeView.ui.add(featureExpand, "top-right");
+
 
 // Function to update the PDF iframe source
 function updatePdfIframe(city) {
