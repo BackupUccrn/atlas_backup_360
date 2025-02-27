@@ -11,6 +11,7 @@ import esriConfig from "@arcgis/core/config";
 import BasemapGallery from "@arcgis/core/widgets/BasemapGallery";
 import Legend from "@arcgis/core/widgets/Legend";
 import { uhiRenderer } from '../renderers/uhiRenderer.js';
+import { popRenderer } from '../renderers/popRenderer.js';
 import { leczRenderer } from '../renderers/leczRenderer.js';
 import GeoJSONLayer from "@arcgis/core/layers/GeoJSONLayer";
 import Feature from "@arcgis/core/widgets/Feature";
@@ -20,6 +21,7 @@ import ImageryTileLayer from "@arcgis/core/layers/ImageryTileLayer.js";
 import Layer from "@arcgis/core/layers/Layer";
 import Portal from "@arcgis/core/portal/Portal";
 import PortalGroup from "@arcgis/core/portal/PortalGroup";
+import RasterStretchRenderer from "@arcgis/core/renderers/RasterStretchRenderer.js";
 
 import "@esri/calcite-components/dist/calcite/calcite.css";
 import "./style.css";
@@ -183,6 +185,7 @@ const map = new Map({
     attribution: "CIESIN, Columbia University"
   }
 });
+
 //////////////////////////////////////////////////////////////////checked boxes 
 // Load Mega City Layer with Custom Symbol
 const megaCityLayer = new GeoJSONLayer({
@@ -262,8 +265,77 @@ Layer.fromPortalItem({
 }).catch((error) => {
   console.error("Error loading Land Cover layer:", error);
 });
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////population 
+Layer.fromPortalItem({
+  portalItem: {
+    id: "53b1f6e74f054deb867e2d624f9b0851" 
+  }
+}).then((layer) => {
+  console.log("Population layer loaded:", layer);
 
+  // Ensure layer is of imagery type
+  if (layer.type === "imagery") {
+    console.log("Applying custom Standard Deviation renderer...");
 
+    // Extract band statistics from the layer
+    const bandStat = layer.rasterInfo.statistics[0]; // Get statistics for the first band
+
+    // Apply Raster Stretch Renderer with Standard Deviation
+    layer.renderer = new RasterStretchRenderer({
+      stretchType: "standard-deviation", // ✅ Use Standard Deviation Stretch
+      numberOfStandardDeviations: 2, // ✅ Set Standard Deviation to 2
+      useGamma: true, // ✅ Enable Gamma Correction
+      gamma: [3], // ✅ Apply gamma correction at 3
+
+      // Apply custom statistics (ensures values < 1 are ignored)
+      customStatistics: [{
+        min: 1, // ✅ Ensure values <1 are ignored
+        max: bandStat.max, // ✅ Use dataset's maximum
+        avg: bandStat.avg, // ✅ Maintain dataset’s average
+        stddev: bandStat.stddev // ✅ Use dataset standard deviation
+      }]
+    });
+
+    console.log("Renderer applied:", layer.renderer);
+  }
+
+  // Apply Pixel Filter (Hides all values <1)
+  layer.pixelFilter = function (pixelData) {
+    console.log("Applying pixel filter...");
+    if (pixelData && pixelData.pixelBlock) {
+      let pixels = pixelData.pixelBlock.pixels[0];
+      let mask = pixelData.pixelBlock.mask;
+      let numPixels = pixelData.pixelBlock.width * pixelData.pixelBlock.height;
+
+      for (let i = 0; i < numPixels; i++) {
+        if (pixels[i] < 1) { 
+          mask[i] = 0;  // ✅ Hide values <1
+        }
+      }
+    }
+  };
+
+  // Additional Properties
+  layer.opacity = 0.7;
+  layer.title = "Population count 2025 GHSL (3arcsec)";
+  layer.useViewTime = true;
+  layer.popupEnabled = true;
+  layer.popupTemplate = {
+    title: "Population count 2025 GHSL_3arcsec",
+    content: "{Raster.ServicePixelValue}",
+    returnPixelValues: false
+  };
+
+  // Add Layer to Map
+  map.add(layer);
+
+  // Assign it to a variable for global reference
+  population_2025 = layer;
+
+}).catch((error) => {
+  console.error("Error loading Population 2025 layer:", error);
+});
+/////////////////////////////////////////////////////////////////////////////////end pop 
 // Setup portal and group query
 const portal = new Portal();
 portal.load().then(() => {
@@ -320,7 +392,7 @@ const activeView = new MapView({
   }
 });
 
-// Create layer list widget with reordering enabled
+
 const layerList = new LayerList({
   view: activeView,
   dragEnabled: true, // Enable drag and drop
@@ -328,6 +400,8 @@ const layerList = new LayerList({
     const item = event.item;
   }
 });
+activeView.ui.add(layerList, "top-right");
+
 
 // Handle layer reordering actions
 layerList.on("trigger-action", (event) => {
@@ -611,135 +685,36 @@ function closeCurrentWidget() {
   }
 }
 
-////////////////////////////////////////////////////////////////////////pdf
-
-
-// Ensure pdfIframe is initialized
-let pdfIframe = document.createElement("iframe");
-pdfIframe.style.width = "100%";
-pdfIframe.style.height = "100%";
-pdfIframe.style.border = "none";
-pdfIframe.style.display = "block";
-
-// Append iframe to the container
-featureWidgetContainer.appendChild(pdfIframe);
-
-
-
-// Function to update the PDF iframe source
+// Function to update the PDF iframe source based on the city
 function updatePdfIframe(city) {
-    const pdfBasePath = "./pdfs/";
-
-    // Map city names to their respective PDF files
-    const cityPdfMap = {
-        "New York City": "nyc-test.pdf",
-        "Los Angeles City": "la-test.pdf",
-        "Copenhagen": "cop-test.pdf",
-        "Mexico City": "mex-test.pdf"
-    };
-
-    // Ensure the city exists in the mapping
-    if (!(city in cityPdfMap)) {
-        console.error(`No PDF found for ${city}`);
-        return;
+  const pdfBasePath = "./pdfs/";
+  let pdfPath;
+  
+  try {
+    if (city === "New York City") {
+      pdfPath = `${pdfBasePath}nyc-test.pdf#zoom=35`;
+    } else if (city === "Los Angeles City") {
+      pdfPath = `${pdfBasePath}la-test.pdf#zoom=35`;
+    } else if (city === "Copenhagen") {
+      pdfPath = `${pdfBasePath}cop-test.pdf#zoom=35`;
+    } else if (city === "Mexico City") {
+      pdfPath = `${pdfBasePath}mex-test.pdf#zoom=35`;
+    } else if (city === "Durban") {
+      pdfPath = `${pdfBasePath}Durb-test.pdf#zoom=35`;
+    } else if (city === "Rio") {
+    pdfPath = `${pdfBasePath}rio-test.pdf#zoom=35`;
     }
-
-    // Ensure pdfIframe is defined before updating its src
-    if (!pdfIframe) {
-        console.error("pdfIframe is not defined!");
-        return;
-    }
-
-    // Construct the PDF path and update the iframe
-    const pdfPath = `${pdfBasePath}${cityPdfMap[city]}#zoom=35`;
-    console.log(`Loading PDF for ${city}: ${pdfPath}`);
-    pdfIframe.src = pdfPath;
-
-    // Handle potential errors if the PDF fails to load
-    pdfIframe.onerror = () => {
+    
+    if (pdfPath) {
+      pdfIframe.src = pdfPath;
+      pdfIframe.onerror = () => {
         console.error(`Failed to load PDF for ${city}`);
-    };
+      };
+    }
+  } catch (error) {
+    console.error(`Error loading PDF for ${city}:`, error);
+  }
 }
-
-// Function to handle clicks on Mega City Layer (New York, LA, Mexico City)
-function handleMegaCityClick(event) {
-    activeView.hitTest(event).then((response) => {
-        const results = response.results;
-
-        if (results.length > 0) {
-            const graphic = results[0].graphic;
-            if (graphic && graphic.layer === megaCityLayer) {
-                const cityName = graphic.attributes?.name;
-                if (["New York City", "Los Angeles City", "Mexico City"].includes(cityName)) {
-                    console.log(`${cityName} clicked, loading PDF...`);
-                    updatePdfIframe(cityName);
-                    featureExpand.expanded = true;
-                }
-            }
-        }
-    });
-}
-
-// Function to handle clicks on Large City Layer (Copenhagen)
-function handleLargeCityClick(event) {
-    activeView.hitTest(event).then((response) => {
-        const results = response.results;
-
-        if (results.length > 0) {
-            const graphic = results[0].graphic;
-            if (graphic && graphic.layer === largeCityLayer) {
-                const cityName = graphic.attributes?.name;
-                if (cityName === "Copenhagen") {
-                    console.log("Copenhagen clicked, loading PDF...");
-                    updatePdfIframe(cityName);
-                    featureExpand.expanded = true;
-                }
-            }
-        }
-    });
-}
-
-// Ensure event listeners are only added once
-if (!megaCityLayer.eventListenerAttached) {
-    activeView.whenLayerView(megaCityLayer).then(() => {
-        activeView.on("click", handleMegaCityClick);
-    });
-    megaCityLayer.eventListenerAttached = true;
-}
-
-if (!largeCityLayer.eventListenerAttached) {
-    activeView.whenLayerView(largeCityLayer).then(() => {
-        activeView.on("click", handleLargeCityClick);
-    });
-    largeCityLayer.eventListenerAttached = true;
-}
-
-// Search widget for cities
-const searchWidget = new Search({
-    view: activeView,
-    includeDefaultSources: false,
-    sources: [
-        { layer: nycLayer, searchFields: ["name"], displayField: "name", exactMatch: false, outFields: ["*"], name: "New York City" },
-        { layer: laLayer, searchFields: ["name"], displayField: "name", exactMatch: false, outFields: ["*"], name: "Los Angeles" },
-        { layer: copLayer, searchFields: ["name"], displayField: "name", exactMatch: false, outFields: ["*"], name: "Copenhagen" },
-        { layer: mexLayer, searchFields: ["name"], displayField: "name", exactMatch: false, outFields: ["*"], name: "Mexico City" }
-    ],
-    popupEnabled: false
-});
-const searchExpand = new Expand({ view: activeView, content: searchWidget, expanded: false, expandIconClass: "esri-icon-search" });
-activeView.ui.add(searchExpand, "top-right");
-
-// Add click handler to close feature widget when clicking outside
-activeView.on("click", (event) => {
-    activeView.hitTest(event).then((response) => {
-        if (response.results.length === 0 && featureExpand.expanded) {
-            featureExpand.expanded = false;
-        }
-    });
-});
-
-
-////////////////////////////////////////////////////////////////////////////////////////////end pdf
 
 // Function to handle layer view click events
 function handleLayerViewClick(event, layer, city) {
@@ -1026,5 +1001,6 @@ activeView.on("click", (event) => {
     console.error("Error identifying pixel value:", error);
   });
 });
+
 
 
