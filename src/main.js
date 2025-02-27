@@ -613,7 +613,69 @@ function closeCurrentWidget() {
     currentOpenWidget = null;
   }
 }
+////////////////////////////////////////////////////////////////////////////pdf start
 
+
+
+// Create a container for the PDF viewer
+const pdfViewerContainer = document.createElement("div");
+pdfViewerContainer.style.position = "absolute";
+pdfViewerContainer.style.top = "10px";
+pdfViewerContainer.style.right = "10px";
+pdfViewerContainer.style.width = "300px";
+pdfViewerContainer.style.height "400px";
+pdfViewerContainer.style.zIndex = "999";
+pdfViewerContainer.style.backgroundColor = "#FFFFFF";
+pdfViewerContainer.style.border = "1px solid black";
+pdfViewerContainer.style.display = "none"; // Initially hidden
+
+const pdfIframe = document.createElement("iframe");
+pdfIframe.style.width = "100%";
+pdfIframe.style.height = "100%";
+pdfIframe.style.border = "none";
+pdfViewerContainer.appendChild(pdfIframe);
+
+view.ui.add(pdfViewerContainer, "top-right");
+
+function showPdf(city) {
+  const pdfBasePath = "./pdfs/";
+  let pdfPath;
+
+  if (city === "New York City") {
+    pdfPath = `${pdfBasePath}nyc-test.pdf`;
+  } else if (city === "Los Angeles") {
+    pdfPath = `${pdfBasePath}la-test.pdf`;
+  } else if (city === "Mexico City") {
+    pdfPath = `${pdfBasePath}mex-test.pdf`;
+  }
+
+  pdfIframe.src = pdfPath;
+  pdfViewerContainer.style.display = "block";  // Show the PDF viewer
+}
+
+// Setup interaction for the PDF viewer
+view.on("click", function(event) {
+  view.hitTest(event).then(function(response) {
+    if (response.results.length > 0) {
+      const graphic = response.results.filter(result => {
+        return result.graphic.layer === megaCityLayer;
+      })[0].graphic;
+
+      if (graphic) {
+        showPdf(graphic.attributes.cityName);  // Assuming 'cityName' is an attribute
+      }
+    }
+  });
+});
+
+// Optionally, add a close button to the PDF viewer
+const closeButton = document.createElement("button");
+closeButton.textContent = "Close";
+closeButton.onclick = function() {
+  pdfViewerContainer.style.display = "none";
+};
+pdfViewerContainer.appendChild(closeButton);
+///////////////////////////////////////////////////////////////////////////pdf end
 // Function to update the PDF iframe source based on the city
 function updatePdfIframe(city) {
   const pdfBasePath = "./pdfs/";
