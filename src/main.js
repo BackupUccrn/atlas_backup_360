@@ -613,18 +613,23 @@ function closeCurrentWidget() {
 
 ////////////////////////////////////////////////////////////////////////pdf
 
-// Create feature widget container and PDF iframe
-const featureWidgetContainer = document.createElement("div");
-featureWidgetContainer.className = "feature-widget-container";
+// Ensure feature widget container is declared only once
+if (!window.featureWidgetContainer) {
+    window.featureWidgetContainer = document.createElement("div");
+    window.featureWidgetContainer.className = "feature-widget-container";
+}
 
-// Ensure pdfIframe is properly initialized
+// Use the global reference instead of redeclaring
+const featureWidgetContainer = window.featureWidgetContainer;
+
+// Ensure pdfIframe is initialized
 let pdfIframe = document.createElement("iframe");
 pdfIframe.style.width = "100%";
 pdfIframe.style.height = "100%";
 pdfIframe.style.border = "none";
 pdfIframe.style.display = "block";
 
-// Append iframe to the feature widget container
+// Append iframe to the container
 featureWidgetContainer.appendChild(pdfIframe);
 
 // Feature Expand widget for displaying city PDFs
@@ -637,9 +642,9 @@ const featureExpand = new Expand({
 });
 activeView.ui.add(featureExpand, "top-right");
 
-// Function to update the PDF iframe source based on the clicked city
+// Function to update the PDF iframe source
 function updatePdfIframe(city) {
-    const pdfBasePath = "./pdfs/"; // Ensure this matches the actual file structure
+    const pdfBasePath = "./pdfs/";
 
     // Map city names to their respective PDF files
     const cityPdfMap = {
