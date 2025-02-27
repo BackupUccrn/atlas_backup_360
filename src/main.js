@@ -275,23 +275,24 @@ Layer.fromPortalItem({
 
   // Ensure layer is of imagery type
   if (layer.type === "imagery") {
-    console.log("Applying custom statistics renderer...");
+    console.log("Applying custom Standard Deviation renderer...");
 
     // Extract band statistics from the layer
     const bandStat = layer.rasterInfo.statistics[0]; // Get statistics for the first band
 
-    // Apply Raster Stretch Renderer with customStatistics
+    // Apply Raster Stretch Renderer with Standard Deviation
     layer.renderer = new RasterStretchRenderer({
-      stretchType: "min-max", // Linear stretch from min to max
-      useGamma: true, // Enable Gamma Correction
-      gamma: [3], // Apply gamma correction at 3
+      stretchType: "standard-deviation", // ✅ Use Standard Deviation Stretch
+      numberOfStandardDeviations: 2, // ✅ Set Standard Deviation to 2
+      useGamma: true, // ✅ Enable Gamma Correction
+      gamma: [3], // ✅ Apply gamma correction at 3
 
-      // Apply customStatistics (ensures values below 1 are ignored)
+      // Apply custom statistics (ensures values < 1 are ignored)
       customStatistics: [{
-        min: 1, // Ensures values < 1 are ignored
-        max: bandStat.max, // Use dataset's maximum
-        avg: bandStat.avg, // Maintain dataset’s average
-        stddev: bandStat.stddev // Use standard deviation from dataset
+        min: 1, // ✅ Ensure values <1 are ignored
+        max: bandStat.max, // ✅ Use dataset's maximum
+        avg: bandStat.avg, // ✅ Maintain dataset’s average
+        stddev: bandStat.stddev // ✅ Use dataset standard deviation
       }]
     });
 
@@ -308,7 +309,7 @@ Layer.fromPortalItem({
 
       for (let i = 0; i < numPixels; i++) {
         if (pixels[i] < 1) { 
-          mask[i] = 0;  // Hide values <1
+          mask[i] = 0;  // ✅ Hide values <1
         }
       }
     }
@@ -334,7 +335,6 @@ Layer.fromPortalItem({
 }).catch((error) => {
   console.error("Error loading Population 2025 layer:", error);
 });
-
 /////////////////////////////////////////////////////////////////////////////////end pop 
 // Setup portal and group query
 const portal = new Portal();
