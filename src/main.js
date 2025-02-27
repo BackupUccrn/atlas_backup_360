@@ -613,14 +613,6 @@ function closeCurrentWidget() {
 
 ////////////////////////////////////////////////////////////////////////pdf
 
-// Ensure feature widget container is declared only once
-if (!window.featureWidgetContainer) {
-    window.featureWidgetContainer = document.createElement("div");
-    window.featureWidgetContainer.className = "feature-widget-container";
-}
-
-// Use the global reference instead of redeclaring
-const featureWidgetContainer = window.featureWidgetContainer;
 
 // Ensure pdfIframe is initialized
 let pdfIframe = document.createElement("iframe");
