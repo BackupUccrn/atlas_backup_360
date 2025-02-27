@@ -84,6 +84,7 @@ const yceouhi_v4 = new ImageryLayer({
     content: "{Raster.ServicePixelValue} Celcius",
     returnPixelValues: false
   },
+  visible: false
 });
 
 const lecz_v3 = new ImageryLayer({
