@@ -615,66 +615,75 @@ function closeCurrentWidget() {
 }
 ////////////////////////////////////////////////////////////////////////////pdf start
 
+// Function to create and show the PDF widget
+function createPdfWidget(city) {
+  const pdfBasePath = "./pdfs/"; // Path to the folder containing PDFs
+  let pdfFile = "";
 
-
-// Create a container for the PDF viewer
-const pdfViewerContainer = document.createElement("div");
-pdfViewerContainer.style.position = "absolute";
-pdfViewerContainer.style.top = "10px";
-pdfViewerContainer.style.right = "10px";
-pdfViewerContainer.style.width = "300px";
-pdfViewerContainer.style.height = "400px";
-pdfViewerContainer.style.zIndex = "999";
-pdfViewerContainer.style.backgroundColor = "#FFFFFF";
-pdfViewerContainer.style.border = "1px solid black";
-pdfViewerContainer.style.display = "none"; // Initially hidden
-
-const pdfIframe = document.createElement("iframe");
-pdfIframe.style.width = "100%";
-pdfIframe.style.height = "100%";
-pdfIframe.style.border = "none";
-pdfViewerContainer.appendChild(pdfIframe);
-
-view.ui.add(pdfViewerContainer, "top-right");
-
-function showPdf(city) {
-  const pdfBasePath = "./pdfs/";
-  let pdfPath;
-
-  if (city === "New York City") {
-    pdfPath = `${pdfBasePath}nyc-test.pdf`;
-  } else if (city === "Los Angeles") {
-    pdfPath = `${pdfBasePath}la-test.pdf`;
-  } else if (city === "Mexico City") {
-    pdfPath = `${pdfBasePath}mex-test.pdf`;
+  // Assign the correct PDF file based on the city clicked
+  switch (city) {
+    case "New York City":
+      pdfFile = "nyc-test.pdf";
+      break;
+    case "Los Angeles City":
+      pdfFile = "la-test.pdf";
+      break;
+    case "Mexico City":
+      pdfFile = "mex-test.pdf";
+      break;
+    default:
+      console.warn(`No PDF found for ${city}`);
+      return;
   }
 
-  pdfIframe.src = pdfPath;
-  pdfViewerContainer.style.display = "block";  // Show the PDF viewer
+  // Create the widget container
+  const pdfWidgetContainer = document.createElement("div");
+  pdfWidgetContainer.className = "pdf-widget-container";
+
+  // Create iframe to display the PDF
+  const pdfIframe = document.createElement("iframe");
+  pdfIframe.src = `${pdfBasePath}${pdfFile}#zoom=35`;
+  pdfIframe.style.width = "100%";
+  pdfIframe.style.height = "500px";
+  pdfIframe.style.border = "none";
+
+  // Append the iframe to the container
+  pdfWidgetContainer.appendChild(pdfIframe);
+
+  // Create Expand widget for PDF
+  const pdfExpand = new Expand({
+    view: activeView,
+    content: pdfWidgetContainer,
+    expanded: true,
+    expandIconClass: "esri-icon-documentation",
+    expandTooltip: "View City Report"
+  });
+
+  // Add the expand widget to the UI
+  activeView.ui.add(pdfExpand, "top-right");
 }
 
-// Setup interaction for the PDF viewer
-view.on("click", function(event) {
-  view.hitTest(event).then(function(response) {
-    if (response.results.length > 0) {
-      const graphic = response.results.filter(result => {
-        return result.graphic.layer === megaCityLayer;
-      })[0].graphic;
+// Handle clicks on Mega Cities layer to trigger the PDF widget
+activeView.whenLayerView(megaCityLayer).then((layerView) => {
+  activeView.on("click", (event) => {
+    activeView.hitTest(event).then((response) => {
+      const results = response.results;
 
-      if (graphic) {
-        showPdf(graphic.attributes.cityName);  // Assuming 'cityName' is an attribute
+      if (results.length > 0) {
+        const graphic = results.find((result) => result.graphic.layer === megaCityLayer)?.graphic;
+
+        if (graphic) {
+          const cityName = graphic.attributes?.name; // Ensure the feature has a 'name' attribute
+          if (cityName) {
+            createPdfWidget(cityName);
+          }
+        }
       }
-    }
+    });
   });
 });
+//////////////////////////////////////////////////////////////////
 
-// Optionally, add a close button to the PDF viewer
-const closeButton = document.createElement("button");
-closeButton.textContent = "Close";
-closeButton.onclick = function() {
-  pdfViewerContainer.style.display = "none";
-};
-pdfViewerContainer.appendChild(closeButton);
 ///////////////////////////////////////////////////////////////////////////pdf end
 // Function to update the PDF iframe source based on the city
 function updatePdfIframe(city) {
