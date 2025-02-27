@@ -394,59 +394,6 @@ function zoomToCityAndShowPDF(cityName) {
     pdfIframe.style.display = "block";
 }
 
-//////////////////////////////////////////////////////////////////checked boxes 
-// Load Mega City Layer with Custom Symbol
-const megaCityLayer = new GeoJSONLayer({
-    url: new URL("../cities/Mega_City.geojson", import.meta.url).href,
-    title: "Mega Cities",
-    visible: true, 
-    renderer: {
-        type: "simple",
-        symbol: {
-            type: "simple-marker",
-            style: "circle",
-            color: [255, 0, 0, 1], 
-            size: 6, // 
-            outline: {
-                color: [0, 0, 0, 0], 
-                width: 0
-            }
-        }
-    },
-    popupEnabled: true 
-});
-/////////////////////////////////////////////////////////////////pdf
-// Add click event listener to the Mega City Layer
-megaCityLayer.on("click", (event) => {
-    event.stopPropagation(); // Stop other events
-
-    const cityName = event.graphic.attributes.Name; // Adjust attribute key based on your data
-    zoomToCityAndShowPDF(cityName); // Function to zoom and show PDF
-});
-/////////////////////////////////////////////////////////////////endpdf
-
-// Load Large City Layer with Custom Symbol
-const largeCityLayer = new GeoJSONLayer({
-    url: new URL("../cities/Large_City.geojson", import.meta.url).href,
-    title: "Large Cities",
-    visible: true, 
-    renderer: {
-        type: "simple",
-        symbol: {
-            type: "simple-marker",
-            style: "circle", 
-            color: [255, 255, 0, 1], 
-            size: 5, // 
-            outline: {
-                color: [0, 0, 0, 0], 
-                width: 0
-            }
-        }
-    }
-});
-
-// Add layers to the map, but DO NOT add to the layer list UI
-map.addMany([megaCityLayer, largeCityLayer]);
 ///////////////////////////////////////////////////////////////checked boxes end 
 
 ///////////////////////////////////////////////////////////////endpdf
