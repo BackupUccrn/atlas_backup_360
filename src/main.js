@@ -713,36 +713,6 @@ activeView.whenLayerView(largeCityLayer).then(() => {
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////end pdf
-// Function to update the PDF iframe source based on the city
-function updatePdfIframe(city) {
-  const pdfBasePath = "./pdfs/";
-  let pdfPath;
-  
-  try {
-    if (city === "New York City") {
-      pdfPath = `${pdfBasePath}nyc-test.pdf#zoom=35`;
-    } else if (city === "Los Angeles City") {
-      pdfPath = `${pdfBasePath}la-test.pdf#zoom=35`;
-    } else if (city === "Copenhagen") {
-      pdfPath = `${pdfBasePath}cop-test.pdf#zoom=35`;
-    } else if (city === "Mexico City") {
-      pdfPath = `${pdfBasePath}mex-test.pdf#zoom=35`;
-    } else if (city === "Durban") {
-      pdfPath = `${pdfBasePath}Durb-test.pdf#zoom=35`;
-    } else if (city === "Rio") {
-    pdfPath = `${pdfBasePath}rio-test.pdf#zoom=35`;
-    }
-    
-    if (pdfPath) {
-      pdfIframe.src = pdfPath;
-      pdfIframe.onerror = () => {
-        console.error(`Failed to load PDF for ${city}`);
-      };
-    }
-  } catch (error) {
-    console.error(`Error loading PDF for ${city}:`, error);
-  }
-}
 
 // Function to handle layer view click events
 function handleLayerViewClick(event, layer, city) {
