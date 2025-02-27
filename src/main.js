@@ -11,7 +11,6 @@ import esriConfig from "@arcgis/core/config";
 import BasemapGallery from "@arcgis/core/widgets/BasemapGallery";
 import Legend from "@arcgis/core/widgets/Legend";
 import { uhiRenderer } from '../renderers/uhiRenderer.js';
-import { popRenderer } from '../renderers/popRenderer.js';
 import { leczRenderer } from '../renderers/leczRenderer.js';
 import GeoJSONLayer from "@arcgis/core/layers/GeoJSONLayer";
 import Feature from "@arcgis/core/widgets/Feature";
@@ -21,7 +20,6 @@ import ImageryTileLayer from "@arcgis/core/layers/ImageryTileLayer.js";
 import Layer from "@arcgis/core/layers/Layer";
 import Portal from "@arcgis/core/portal/Portal";
 import PortalGroup from "@arcgis/core/portal/PortalGroup";
-import RasterStretchRenderer from "@arcgis/core/renderers/RasterStretchRenderer.js";
 
 import "@esri/calcite-components/dist/calcite/calcite.css";
 import "./style.css";
@@ -185,7 +183,6 @@ const map = new Map({
     attribution: "CIESIN, Columbia University"
   }
 });
-
 //////////////////////////////////////////////////////////////////checked boxes 
 // Load Mega City Layer with Custom Symbol
 const megaCityLayer = new GeoJSONLayer({
@@ -265,77 +262,8 @@ Layer.fromPortalItem({
 }).catch((error) => {
   console.error("Error loading Land Cover layer:", error);
 });
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////population 
-Layer.fromPortalItem({
-  portalItem: {
-    id: "53b1f6e74f054deb867e2d624f9b0851" 
-  }
-}).then((layer) => {
-  console.log("Population layer loaded:", layer);
 
-  // Ensure layer is of imagery type
-  if (layer.type === "imagery") {
-    console.log("Applying custom Standard Deviation renderer...");
 
-    // Extract band statistics from the layer
-    const bandStat = layer.rasterInfo.statistics[0]; // Get statistics for the first band
-
-    // Apply Raster Stretch Renderer with Standard Deviation
-    layer.renderer = new RasterStretchRenderer({
-      stretchType: "standard-deviation", // ✅ Use Standard Deviation Stretch
-      numberOfStandardDeviations: 2, // ✅ Set Standard Deviation to 2
-      useGamma: true, // ✅ Enable Gamma Correction
-      gamma: [3], // ✅ Apply gamma correction at 3
-
-      // Apply custom statistics (ensures values < 1 are ignored)
-      customStatistics: [{
-        min: 1, // ✅ Ensure values <1 are ignored
-        max: bandStat.max, // ✅ Use dataset's maximum
-        avg: bandStat.avg, // ✅ Maintain dataset’s average
-        stddev: bandStat.stddev // ✅ Use dataset standard deviation
-      }]
-    });
-
-    console.log("Renderer applied:", layer.renderer);
-  }
-
-  // Apply Pixel Filter (Hides all values <1)
-  layer.pixelFilter = function (pixelData) {
-    console.log("Applying pixel filter...");
-    if (pixelData && pixelData.pixelBlock) {
-      let pixels = pixelData.pixelBlock.pixels[0];
-      let mask = pixelData.pixelBlock.mask;
-      let numPixels = pixelData.pixelBlock.width * pixelData.pixelBlock.height;
-
-      for (let i = 0; i < numPixels; i++) {
-        if (pixels[i] < 1) { 
-          mask[i] = 0;  // ✅ Hide values <1
-        }
-      }
-    }
-  };
-
-  // Additional Properties
-  layer.opacity = 0.7;
-  layer.title = "Population count 2025 GHSL (3arcsec)";
-  layer.useViewTime = true;
-  layer.popupEnabled = true;
-  layer.popupTemplate = {
-    title: "Population count 2025 GHSL_3arcsec",
-    content: "{Raster.ServicePixelValue}",
-    returnPixelValues: false
-  };
-
-  // Add Layer to Map
-  map.add(layer);
-
-  // Assign it to a variable for global reference
-  population_2025 = layer;
-
-}).catch((error) => {
-  console.error("Error loading Population 2025 layer:", error);
-});
-/////////////////////////////////////////////////////////////////////////////////end pop 
 // Setup portal and group query
 const portal = new Portal();
 portal.load().then(() => {
@@ -392,7 +320,7 @@ const activeView = new MapView({
   }
 });
 
-
+// Create layer list widget with reordering enabled
 const layerList = new LayerList({
   view: activeView,
   dragEnabled: true, // Enable drag and drop
@@ -400,8 +328,6 @@ const layerList = new LayerList({
     const item = event.item;
   }
 });
-activeView.ui.add(layerList, "top-right");
-
 
 // Handle layer reordering actions
 layerList.on("trigger-action", (event) => {
@@ -1001,4 +927,5 @@ activeView.on("click", (event) => {
     console.error("Error identifying pixel value:", error);
   });
 });
+
 
