@@ -611,6 +611,108 @@ function closeCurrentWidget() {
   }
 }
 
+////////////////////////////////////////////////////////////////////////pdf
+// Function to update the PDF iframe source based on the city
+function updatePdfIframe(city) {
+  const pdfBasePath = "./pdfs/";
+  let pdfPath = null;
+
+  // Map city names to their PDF paths
+  const cityPdfMap = {
+    "New York City": "nyc-test.pdf",
+    "Los Angeles City": "la-test.pdf",
+    "Mexico City": "mex-test.pdf",
+    "Copenhagen": "cop-test.pdf", // Large City
+  };
+
+  // Check if the city exists in our mapping
+  if (city in cityPdfMap) {
+    pdfPath = `${pdfBasePath}${cityPdfMap[city]}#zoom=35`;
+  }
+
+  // If no valid PDF path is found, return
+  if (!pdfPath) {
+    console.error(`No PDF found for ${city}`);
+    return;
+  }
+
+  // Ensure pdfIframe is defined
+  if (!pdfIframe) {
+    console.error("pdfIframe is not defined!");
+    return;
+  }
+
+  // Set PDF source
+  console.log(`Loading PDF for ${city}: ${pdfPath}`);
+  pdfIframe.src = pdfPath;
+
+  // Handle potential loading errors
+  pdfIframe.onerror = () => {
+    console.error(`Failed to load PDF for ${city}`);
+  };
+}
+
+// Function to handle clicks on Mega City Layer (New York, LA, Mexico)
+function handleMegaCityClick(event) {
+  activeView.hitTest(event).then((response) => {
+    const results = response.results;
+
+    if (results.length > 0) {
+      const graphic = results[0].graphic;
+
+      // Ensure this is the Mega City layer
+      if (graphic && graphic.layer === megaCityLayer) {
+        const cityName = graphic.attributes?.name; // Ensure the city name attribute matches your GeoJSON field
+
+        if (["New York City", "Los Angeles City", "Mexico City"].includes(cityName)) {
+          console.log(`${cityName} clicked, loading PDF...`);
+          updatePdfIframe(cityName);
+          featureExpand.expanded = true;
+          currentOpenWidget = featureExpand;
+        } else {
+          console.log(`Clicked on another mega city: ${cityName}`);
+        }
+      }
+    }
+  });
+}
+
+// Function to handle clicks on Large City Layer (Copenhagen)
+function handleLargeCityClick(event) {
+  activeView.hitTest(event).then((response) => {
+    const results = response.results;
+
+    if (results.length > 0) {
+      const graphic = results[0].graphic;
+
+      // Ensure this is the Large City layer
+      if (graphic && graphic.layer === largeCityLayer) {
+        const cityName = graphic.attributes?.name; // Ensure the city name attribute matches your GeoJSON field
+
+        if (cityName === "Copenhagen") {
+          console.log("Copenhagen clicked, loading PDF...");
+          updatePdfIframe(cityName);
+          featureExpand.expanded = true;
+          currentOpenWidget = featureExpand;
+        } else {
+          console.log(`Clicked on another large city: ${cityName}`);
+        }
+      }
+    }
+  });
+}
+
+// Attach click event listeners for Mega Cities and Large Cities
+activeView.whenLayerView(megaCityLayer).then(() => {
+  activeView.on("click", handleMegaCityClick);
+});
+
+activeView.whenLayerView(largeCityLayer).then(() => {
+  activeView.on("click", handleLargeCityClick);
+});
+
+
+////////////////////////////////////////////////////////////////////////////////////////////end pdf
 // Function to update the PDF iframe source based on the city
 function updatePdfIframe(city) {
   const pdfBasePath = "./pdfs/";
