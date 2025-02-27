@@ -202,7 +202,8 @@ const megaCityLayer = new GeoJSONLayer({
                 width: 0
             }
         }
-    }
+    },
+    popupEnabled: false 
 });
 
 // Load Large City Layer with Custom Symbol
