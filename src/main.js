@@ -614,7 +614,7 @@ function closeCurrentWidget() {
 ////////////////////////////////////////////////////////////////////////pdf
 // Function to update the PDF iframe source based on the city
 function updatePdfIframe(city) {
-  const pdfBasePath = "./pdfs/";
+  const pdfBasePath = "./public/pdfs/";
   let pdfPath = null;
 
   // Map city names to their PDF paths
