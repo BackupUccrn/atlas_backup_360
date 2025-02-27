@@ -396,12 +396,12 @@ const featureWidget = new Feature({
 });
 
 // Add iframe to feature widget container
-const pdfIframe = document.createElement("iframe");
-   pdfIframe.style.width = "100%";
-  pdfIframe.style.height = "calc(100vh - 100px)";
-  pdfIframe.style.border = "none";
-  pdfIframe.style.display = "block";
-  featureWidgetContainer.appendChild(pdfIframe);
+//const pdfIframe = document.createElement("iframe");
+   //pdfIframe.style.width = "100%";
+ // pdfIframe.style.height = "calc(100vh - 100px)";
+ // pdfIframe.style.border = "none";
+  //pdfIframe.style.display = "block";
+  //featureWidgetContainer.appendChild(pdfIframe);
 
 // Add an iframe to the feature widget container for HTML content
 const htmlIframe = document.createElement("iframe");
