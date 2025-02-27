@@ -264,13 +264,14 @@ Layer.fromPortalItem({
   console.error("Error loading Land Cover layer:", error);
 });
 
+
 // Add portal layer for population Cover
 Layer.fromPortalItem({
   portalItem: {
     id: "53b1f6e74f054deb867e2d624f9b0851"
   }
 }).then((layer) => {
-  layer.visible = True; 
+  layer.visible = false; 
   map.add(layer);
 
   // Add layer to layer list
@@ -279,10 +280,7 @@ Layer.fromPortalItem({
     title: "Population 2025 (GHSL_3arcsec)"
   });
 });
-  
-}).catch((error) => {
-  console.error("Error loading population layer:", error);
-});
+
 
 
 // Setup portal and group query
