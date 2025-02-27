@@ -272,7 +272,7 @@ Layer.fromPortalItem({
     id: "53b1f6e74f054deb867e2d624f9b0851"
   }
 }).then((layer) => {
-  layer.visible = false; 
+  layer.visible = true; 
   map.add(layer);
 
   // Add layer to layer list
