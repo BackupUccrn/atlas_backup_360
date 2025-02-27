@@ -84,7 +84,6 @@ const yceouhi_v4 = new ImageryLayer({
     content: "{Raster.ServicePixelValue} Celcius",
     returnPixelValues: false
   },
-  visible: false
 });
 
 const lecz_v3 = new ImageryLayer({
@@ -202,18 +201,8 @@ const megaCityLayer = new GeoJSONLayer({
                 width: 0
             }
         }
-    },
-    popupEnabled: true 
+    }
 });
-/////////////////////////////////////////////////////////////////pdf
-// Add click event listener to the Mega City Layer
-megaCityLayer.on("click", (event) => {
-    event.stopPropagation(); // Stop other events
-
-    const cityName = event.graphic.attributes.Name; // Adjust attribute key based on your data
-    zoomToCityAndShowPDF(cityName); // Function to zoom and show PDF
-});
-/////////////////////////////////////////////////////////////////endpdf
 
 // Load Large City Layer with Custom Symbol
 const largeCityLayer = new GeoJSONLayer({
@@ -275,24 +264,6 @@ Layer.fromPortalItem({
 });
 
 
-// Add portal layer for population Cover
-Layer.fromPortalItem({
-  portalItem: {
-    id: "53b1f6e74f054deb867e2d624f9b0851"
-  }
-}).then((layer) => {
-  layer.visible = true; 
-  map.add(layer);
-
-  // Add layer to layer list
-  layerList.operationalItems.add({
-    layer: layer,
-    title: "Population 2025 (GHSL_3arcsec)"
-  });
-});
-
-
-
 // Setup portal and group query
 const portal = new Portal();
 portal.load().then(() => {
@@ -348,55 +319,7 @@ const activeView = new MapView({
     fillOpacity: 0
   }
 });
-////////////////////////////////////////////////////pdf
-// Initialize PDF iframe
-const pdfIframe = document.createElement("iframe");
-pdfIframe.style.width = "300px";  // Adjust size as necessary
-pdfIframe.style.height = "400px";
-pdfIframe.style.position = "absolute";
-pdfIframe.style.right = "10px";
-pdfIframe.style.top = "10px";
-pdfIframe.style.zIndex = "100"; // Make sure it's on top of other elements
-pdfIframe.style.display = "none"; // Hide it initially
-document.getElementById("viewDiv").appendChild(pdfIframe);
 
-// Define function to handle zoom and PDF update
-function zoomToCityAndShowPDF(cityName) {
-    // Definitions for city details including PDF files
-    const cityDetails = {
-        "New York City": {
-            center: [-74.0060, 40.7128],
-            zoom: 12,
-            pdf: "nyc-test.pdf"
-        },
-        "Los Angeles": {
-            center: [-118.2437, 34.0522],
-            zoom: 12,
-            pdf: "la-test.pdf"
-        },
-        // Add other cities similarly
-    };
-
-    const city = cityDetails[cityName];
-    if (!city) {
-        console.error("City details not found");
-        return;
-    }
-
-    // Zoom to the city
-    activeView.goTo({
-        center: city.center,
-        zoom: city.zoom
-    });
-
-    // Update PDF iframe source and make it visible
-    pdfIframe.src = `./pdfs/${city.pdf}#zoom=85`;
-    pdfIframe.style.display = "block";
-}
-map.reorder(megaCityLayer, map.layers.length - 1);
-///////////////////////////////////////////////////////////////checked boxes end 
-
-///////////////////////////////////////////////////////////////endpdf
 // Create layer list widget with reordering enabled
 const layerList = new LayerList({
   view: activeView,
@@ -455,11 +378,11 @@ const featureWidget = new Feature({
 
 // Add iframe to feature widget container
 //const pdfIframe = document.createElement("iframe");
-   //pdfIframe.style.width = "100%";
- // pdfIframe.style.height = "calc(100vh - 100px)";
- // pdfIframe.style.border = "none";
-  //pdfIframe.style.display = "block";
-  //featureWidgetContainer.appendChild(pdfIframe);
+//pdfIframe.style.width = "100%";
+//pdfIframe.style.height = "calc(101vh - 100px)";
+//pdfIframe.style.border = "none";
+//pdfIframe.style.display = "block";
+//featureWidgetContainer.appendChild(pdfIframe);
 
 // Add an iframe to the feature widget container for HTML content
 const htmlIframe = document.createElement("iframe");
@@ -670,9 +593,7 @@ function closeCurrentWidget() {
     currentOpenWidget = null;
   }
 }
-/////////////////////////////////////////////////////////////////////////////pdf start 
 
-///////////////////////////////////////////////////////////////////////////pdf end
 // Function to update the PDF iframe source based on the city
 function updatePdfIframe(city) {
   const pdfBasePath = "./pdfs/";
@@ -927,6 +848,86 @@ activeView.ui.add(settingsButton, "top-right");
 // Add to view UI
 activeView.ui.add(selectorExpand, "top-left");
 
+// Function to create and manage the PDF Viewer widget
+function createPdfViewerWidget() {
+  // Create the container for the PDF Viewer
+  const pdfContainer = document.createElement("div");
+  pdfContainer.className = "pdf-widget-container"; 
+  pdfContainer.style.width = "500px"; 
+  pdfContainer.style.height = "600px";
+  pdfContainer.style.background = "#ffffff";
+  pdfContainer.style.boxShadow = "0px 4px 6px rgba(0, 0, 0, 0.1)";
+  pdfContainer.style.padding = "10px";
+  pdfContainer.style.overflow = "hidden";
+
+  // Create the iframe to display PDFs
+  const pdfIframe = document.createElement("iframe");
+  pdfIframe.style.width = "100%";
+  pdfIframe.style.height = "100%";
+  pdfIframe.style.border = "none";
+
+  pdfContainer.appendChild(pdfIframe);
+
+  // Create Expand widget for the PDF viewer
+  const pdfExpand = new Expand({
+    view: activeView,
+    content: pdfContainer,
+    expanded: false,
+    expandIconClass: "esri-icon-documentation",
+    expandTooltip: "View City Report"
+  });
+
+  // Add to the UI
+  activeView.ui.add(pdfExpand, "top-right");
+
+  return { pdfContainer, pdfIframe, pdfExpand };
+}
+
+// Initialize the PDF widget
+const { pdfContainer, pdfIframe, pdfExpand } = createPdfViewerWidget();
+
+// Function to update the PDF based on clicked megacity
+function updatePdfViewer(city) {
+  const pdfBasePath = "./pdfs/";
+  const pdfFiles = {
+    "New York City": "nyc-report.pdf",
+    "Los Angeles City": "la-report.pdf",
+    "Mexico City": "mexico-report.pdf"
+  };
+
+  if (pdfFiles[city]) {
+    pdfIframe.src = `${pdfBasePath}${pdfFiles[city]}#zoom=75`;
+    pdfExpand.expanded = true; // Open the widget when a city is clicked
+  } else {
+    console.error(`No PDF found for ${city}`);
+  }
+}
+
+// Handle click events for the MegaCity layer
+activeView.on("click", (event) => {
+  activeView.hitTest(event).then((response) => {
+    const results = response.results;
+    
+    if (results.length > 0) {
+      const graphic = results.find((res) => res.graphic.layer === megaCityLayer)?.graphic;
+      
+      if (graphic) {
+        const cityName = graphic.attributes?.name || "Unknown City";
+        updatePdfViewer(cityName);
+      }
+    }
+  });
+});
+
+// Ensure clicking outside closes the widget
+activeView.on("click", (event) => {
+  activeView.hitTest(event).then((response) => {
+    if (!response.results.some(res => res.graphic.layer === megaCityLayer)) {
+      pdfExpand.expanded = false; // Close widget if clicking outside
+    }
+  });
+});
+
 // Add function to check multidimensional layer visibility
 function updateMultidimensionalFilterVisibility() {
   const hasVisibleMultidimensionalLayer = activeView.map.layers.some(layer => 
@@ -989,4 +990,5 @@ activeView.on("click", (event) => {
     console.error("Error identifying pixel value:", error);
   });
 });
+
 
