@@ -203,8 +203,17 @@ const megaCityLayer = new GeoJSONLayer({
             }
         }
     },
-    popupEnabled: false 
+    popupEnabled: true 
 });
+/////////////////////////////////////////////////////////////////pdf
+// Add click event listener to the Mega City Layer
+megaCityLayer.on("click", (event) => {
+    event.stopPropagation(); // Stop other events
+
+    const cityName = event.graphic.attributes.Name; // Adjust attribute key based on your data
+    zoomToCityAndShowPDF(cityName); // Function to zoom and show PDF
+});
+/////////////////////////////////////////////////////////////////endpdf
 
 // Load Large City Layer with Custom Symbol
 const largeCityLayer = new GeoJSONLayer({
@@ -339,7 +348,108 @@ const activeView = new MapView({
     fillOpacity: 0
   }
 });
+////////////////////////////////////////////////////pdf
+// Initialize PDF iframe
+const pdfIframe = document.createElement("iframe");
+pdfIframe.style.width = "300px";  // Adjust size as necessary
+pdfIframe.style.height = "400px";
+pdfIframe.style.position = "absolute";
+pdfIframe.style.right = "10px";
+pdfIframe.style.top = "10px";
+pdfIframe.style.zIndex = "100"; // Make sure it's on top of other elements
+pdfIframe.style.display = "none"; // Hide it initially
+document.getElementById("viewDiv").appendChild(pdfIframe);
 
+// Define function to handle zoom and PDF update
+function zoomToCityAndShowPDF(cityName) {
+    // Definitions for city details including PDF files
+    const cityDetails = {
+        "New York City": {
+            center: [-74.0060, 40.7128],
+            zoom: 12,
+            pdf: "nyc-test.pdf"
+        },
+        "Los Angeles": {
+            center: [-118.2437, 34.0522],
+            zoom: 12,
+            pdf: "la-test.pdf"
+        },
+        // Add other cities similarly
+    };
+
+    const city = cityDetails[cityName];
+    if (!city) {
+        console.error("City details not found");
+        return;
+    }
+
+    // Zoom to the city
+    activeView.goTo({
+        center: city.center,
+        zoom: city.zoom
+    });
+
+    // Update PDF iframe source and make it visible
+    pdfIframe.src = `./pdfs/${city.pdf}#zoom=85`;
+    pdfIframe.style.display = "block";
+}
+
+//////////////////////////////////////////////////////////////////checked boxes 
+// Load Mega City Layer with Custom Symbol
+const megaCityLayer = new GeoJSONLayer({
+    url: new URL("../cities/Mega_City.geojson", import.meta.url).href,
+    title: "Mega Cities",
+    visible: true, 
+    renderer: {
+        type: "simple",
+        symbol: {
+            type: "simple-marker",
+            style: "circle",
+            color: [255, 0, 0, 1], 
+            size: 6, // 
+            outline: {
+                color: [0, 0, 0, 0], 
+                width: 0
+            }
+        }
+    },
+    popupEnabled: true 
+});
+/////////////////////////////////////////////////////////////////pdf
+// Add click event listener to the Mega City Layer
+megaCityLayer.on("click", (event) => {
+    event.stopPropagation(); // Stop other events
+
+    const cityName = event.graphic.attributes.Name; // Adjust attribute key based on your data
+    zoomToCityAndShowPDF(cityName); // Function to zoom and show PDF
+});
+/////////////////////////////////////////////////////////////////endpdf
+
+// Load Large City Layer with Custom Symbol
+const largeCityLayer = new GeoJSONLayer({
+    url: new URL("../cities/Large_City.geojson", import.meta.url).href,
+    title: "Large Cities",
+    visible: true, 
+    renderer: {
+        type: "simple",
+        symbol: {
+            type: "simple-marker",
+            style: "circle", 
+            color: [255, 255, 0, 1], 
+            size: 5, // 
+            outline: {
+                color: [0, 0, 0, 0], 
+                width: 0
+            }
+        }
+    }
+});
+
+// Add layers to the map, but DO NOT add to the layer list UI
+map.addMany([megaCityLayer, largeCityLayer]);
+///////////////////////////////////////////////////////////////checked boxes end 
+
+///////////////////////////////////////////////////////////////endpdf
 // Create layer list widget with reordering enabled
 const layerList = new LayerList({
   view: activeView,
@@ -613,76 +723,7 @@ function closeCurrentWidget() {
     currentOpenWidget = null;
   }
 }
-////////////////////////////////////////////////////////////////////////////pdf start
-
-// Function to create and show the PDF widget
-function createPdfWidget(city) {
-  const pdfBasePath = "./pdfs/"; // Path to the folder containing PDFs
-  let pdfFile = "";
-
-  // Assign the correct PDF file based on the city clicked
-  switch (city) {
-    case "New York City":
-      pdfFile = "nyc-test.pdf";
-      break;
-    case "Los Angeles City":
-      pdfFile = "la-test.pdf";
-      break;
-    case "Mexico City":
-      pdfFile = "mex-test.pdf";
-      break;
-    default:
-      console.warn(`No PDF found for ${city}`);
-      return;
-  }
-
-  // Create the widget container
-  const pdfWidgetContainer = document.createElement("div");
-  pdfWidgetContainer.className = "pdf-widget-container";
-
-  // Create iframe to display the PDF
-  const pdfIframe = document.createElement("iframe");
-  pdfIframe.src = `${pdfBasePath}${pdfFile}#zoom=35`;
-  pdfIframe.style.width = "100%";
-  pdfIframe.style.height = "500px";
-  pdfIframe.style.border = "none";
-
-  // Append the iframe to the container
-  pdfWidgetContainer.appendChild(pdfIframe);
-
-  // Create Expand widget for PDF
-  const pdfExpand = new Expand({
-    view: activeView,
-    content: pdfWidgetContainer,
-    expanded: true,
-    expandIconClass: "esri-icon-documentation",
-    expandTooltip: "View City Report"
-  });
-
-  // Add the expand widget to the UI
-  activeView.ui.add(pdfExpand, "top-right");
-}
-
-// Handle clicks on Mega Cities layer to trigger the PDF widget
-activeView.whenLayerView(megaCityLayer).then((layerView) => {
-  activeView.on("click", (event) => {
-    activeView.hitTest(event).then((response) => {
-      const results = response.results;
-
-      if (results.length > 0) {
-        const graphic = results.find((result) => result.graphic.layer === megaCityLayer)?.graphic;
-
-        if (graphic) {
-          const cityName = graphic.attributes?.name; // Ensure the feature has a 'name' attribute
-          if (cityName) {
-            createPdfWidget(cityName);
-          }
-        }
-      }
-    });
-  });
-});
-//////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////pdf start 
 
 ///////////////////////////////////////////////////////////////////////////pdf end
 // Function to update the PDF iframe source based on the city
