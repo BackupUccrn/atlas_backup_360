@@ -623,7 +623,7 @@ pdfViewerContainer.style.position = "absolute";
 pdfViewerContainer.style.top = "10px";
 pdfViewerContainer.style.right = "10px";
 pdfViewerContainer.style.width = "300px";
-pdfViewerContainer.style.height "400px";
+pdfViewerContainer.style.height = "400px";
 pdfViewerContainer.style.zIndex = "999";
 pdfViewerContainer.style.backgroundColor = "#FFFFFF";
 pdfViewerContainer.style.border = "1px solid black";
