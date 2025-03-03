@@ -613,7 +613,7 @@ function handleMapClick(event) {
 
 // Function to update the PDF iframe source based on the city
 function updatePdfIframe(city) {
-  const pdfBasePath = "./pdfs/";
+  const pdfBasePath = "./public/pdfs/";
   let pdfPath;
   
   try {
