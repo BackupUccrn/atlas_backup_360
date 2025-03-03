@@ -595,6 +595,22 @@ function closeCurrentWidget() {
   }
 }
 
+function handleMapClick(event) {
+    activeView.hitTest(event).then(function(response) {
+        var result = response.results.filter(function(r) {
+            return r.graphic.layer.id === "desiredLayerId";  // Ensure to replace 'desiredLayerId' with actual layer ID
+        })[0];
+
+        if (result) {
+            var New york city = result.graphic.attributes.CityName; 
+            var New york city pdf = `./public/pdfs/${nyc-test}.pdf`; 
+            document.getElementById('pdfIframe').src = New york city pdf; 
+        }
+    });
+}
+
+
+
 // Function to update the PDF iframe source based on the city
 function updatePdfIframe(city) {
   const pdfBasePath = "./pdfs/";
