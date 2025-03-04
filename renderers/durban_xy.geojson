@@ -1,0 +1,19 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": 3,
+      "geometry": {
+        "type": "Point",
+        "coordinates": [31.021800000000042, -29.858699999999942]
+      },
+      "properties": {
+        "OBJECTID": 3,
+        "City": "Durban",
+        "Longitude__X_": 31.021799999999999,
+        "Latitude__Y_": -29.858699999999999
+      }
+    }
+  ]
+}
