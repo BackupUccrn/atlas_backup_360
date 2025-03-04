@@ -1,17 +1,17 @@
 {
-   "type": "FeatureCollection",
+  "type": "FeatureCollection",
    "features": [
-    {
-       "type": "Feature",
+  {
+      "type": "Feature",
       "name": "Kano",
        "id": "relation/3710302",
-       "properties": {
-         "name": "Kano",
-         "uccrn": ""
-       },
-       "geometry": {
-        "type": "MultiPolygon",
-         "coordinates": [
+        "properties": {
+          "name": "Kano",
+          "uccrn": ""
+        },
+        "geometry": {
+         "type": "MultiPolygon",
+          "coordinates": [
            [
              [
               [ 
