@@ -10,7 +10,7 @@
         "uccrn": "heat"
       },
       "geometry": {
-        "type": "Polygon",
+        "type": "MultiPolygon",
         "coordinates": [
         [
           [
