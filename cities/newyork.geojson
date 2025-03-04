@@ -6,14 +6,14 @@
       "id": 1,
       "geometry": {
         "type": "Point",
-        "coordinates": [-73.935239999999965, 40.73061000000007]
+        "coordinates": [-73.93524, 40.73061]
       },
       "properties": {
         "OBJECTID": 1,
         "City": "New York City",
-        "Longitude__X_": -73.935239999999993,
-        "Latitude__Y_": 40.730609999999999
+        "Longitude__X_": -73.93524,
+        "Latitude__Y_": 40.73061
       }
     }
   ]
-}  
+}
