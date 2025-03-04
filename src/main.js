@@ -1,3 +1,4 @@
+
 import Expand from '@arcgis/core/widgets/Expand';
 import MapView from "@arcgis/core/views/MapView";
 import Map from "@arcgis/core/Map";
@@ -25,7 +26,7 @@ import "@esri/calcite-components/dist/calcite/calcite.css";
 import "./style.css";
 
 // Set the API key
-esriConfig.apiKey = import.meta.env.VITE_ESRI_API_KEY;
+esriConfig.apiKey = "AAPTxy8BH1VEsoebNVZXo8HurIWA0Kb8hy8QYktHa6tfxwpxL5sq5rL-OKSuRlzZC9F2Vx9RXZcShiMwuHMhLzuysGK9DOZXmlj8YtO2q-kOSOKJDJvfGUXZvDIQFnEYAcX1-GyD7A6h2ctULOaxG58EdiJ2r7EN13WWi2UbSYOGXS-ZOcb_XWNfetLgtAVFJc5JdCw2uxz1O3cMlKRkpu9oae3RWwAU6gtPusEZVd6hbjY.AT1_ZoJgL2zc";
 
 // Create grey canvas basemap
 const basemap = Basemap.fromId("dark-gray-vector");
@@ -84,7 +85,6 @@ const yceouhi_v4 = new ImageryLayer({
     content: "{Raster.ServicePixelValue} Celcius",
     returnPixelValues: false
   },
-  visible: false
 });
 
 const lecz_v3 = new ImageryLayer({
@@ -157,12 +157,6 @@ const mexLayer = new GeoJSONLayer({
   ...layerOptions
 });
 
-const saLayer = new GeoJSONLayer({
-  url: new URL("../cities/singapore.geojson", import.meta.url).href,
-  title: "Singapore",
-  ...layerOptions
-});
-
 const DurbanLayer = new GeoJSONLayer({
   url: new URL("../cities/Durban.geojson", import.meta.url).href,
   title: "Durban",
@@ -172,6 +166,12 @@ const DurbanLayer = new GeoJSONLayer({
 const rioLayer = new GeoJSONLayer({
   url: new URL("../cities/Rio-de-Janeiro-city.geojson", import.meta.url).href,
   title: "Rio de Janeiro",
+  ...layerOptions
+});
+
+const saLayer = new GeoJSONLayer({
+  url: new URL("../cities/singapore.geojson", import.meta.url).href,
+  title: "Singapore",
   ...layerOptions
 });
 
@@ -198,61 +198,17 @@ const kanoLayer = new GeoJSONLayer({
 const map = new Map({
   basemap: basemap,
   layers:  [yceouhi_v4, lecz_v3, ssp245, nycLayer, laLayer, copLayer, mexLayer, DurbanLayer, rioLayer, saLayer, shanghaiLayer, napleslayer, kanoLayer],
+  
   // Add attribution
   portalItem: {
     attribution: "CIESIN, Columbia University"
   }
 });
 
-//////////////////////////////////////////////////////////////////checked boxes 
-// Load Mega City Layer with Custom Symbol
-const megaCityLayer = new GeoJSONLayer({
-    url: new URL("../cities/Mega_City.geojson", import.meta.url).href,
-    title: "Mega Cities",
-    visible: true, 
-    renderer: {
-        type: "simple",
-        symbol: {
-            type: "simple-marker",
-            style: "circle",
-            color: [0, 0, 255, 1], 
-            size: 12, // 
-            outline: {
-                color: [0, 0, 0, 0], 
-                width: 0
-            }
-        }
-    }
-});
-
-// Load Large City Layer with Custom Symbol
-const largeCityLayer = new GeoJSONLayer({
-    url: new URL("../cities/Large_City.geojson", import.meta.url).href,
-    title: "Large Cities",
-    visible: true, 
-    renderer: {
-        type: "simple",
-        symbol: {
-            type: "simple-marker",
-            style: "circle", 
-            color: [0, 128, 0, 1], 
-            size: 7, // 
-            outline: {
-                color: [0, 0, 0, 0], 
-                width: 0
-            }
-        }
-    }
-});
-
-// Add layers to the map, but DO NOT add to the layer list UI
-map.addMany([megaCityLayer, largeCityLayer]);
-///////////////////////////////////////////////////////////////checked boxes end 
-
 // Add portal layer
 Layer.fromPortalItem({
   portalItem: {
-    id: "20da8d9af73043bd88a3566d5602b86e" 
+    id: "20da8d9af73043bd88a3566d5602b86e"
   }
 }).then((layer) => {
   layer.visible = false; // Start with layer hidden
@@ -261,33 +217,18 @@ Layer.fromPortalItem({
   // Add layer to layer list
   layerList.operationalItems.add({
     layer: layer,
-    title: "Global climate (Köppen–Geiger-climate-classification)"
+    title: "Global climate (KÃƒÂ¶ppenÃ¢â‚¬â€œGeiger-climate-classification)"
   });
 });
 
-// Add portal layer
+
+// Add portal layer for Land Cover
 Layer.fromPortalItem({
   portalItem: {
-    id: "6690a75950004b79927f585ee79c9a7e" 
+    id: "eb4f0fd5274242a18bde901f78f7584d"
   }
 }).then((layer) => {
-  layer.visible = false; // Start with layer hidden
-  map.add(layer);
-
-  // Add layer to layer list
-  layerList.operationalItems.add({
-    layer: layer,
-    title: "Global Anthropogenic Biomes"
-  });
-});
-
-// Add portal layer
-Layer.fromPortalItem({
-  portalItem: {
-    id: "eb4f0fd5274242a18bde901f78f7584d" 
-  }
-}).then((layer) => {
-  layer.visible = false; // Start with layer hidden
+  layer.visible = false; // Start with the layer hidden
   map.add(layer);
 
   // Add layer to layer list
@@ -295,22 +236,8 @@ Layer.fromPortalItem({
     layer: layer,
     title: "Land Cover 2023 MODIS"
   });
-});
-
-// Add portal layer for population Cover
-Layer.fromPortalItem({
-  portalItem: {
-    id: "9778e7bddfdc4b7889fd2f385e8346f0"
-  }
-}).then((layer) => {
-  layer.visible = true;
-  map.add(layer);
-
-  // Add layer to layer list
-  layerList.operationalItems.add({
-    layer: layer,
-    title: "Population count 2025 (GHSL_3arcsec)"
-  });
+}).catch((error) => {
+  console.error("Error loading Land Cover layer:", error);
 });
 
 // Setup portal and group query
@@ -357,7 +284,7 @@ portal.load().then(() => {
 
 // Create view
 const activeView = new MapView({
-  zoom: 2,
+  zoom: 6,
   center: [2.35, 48.85], // Paris coordinates
   container: "viewDiv",
   map: map,
@@ -410,14 +337,14 @@ const timeSliderExpand = new Expand({
   expanded: false
 });
 
-//////////////////////////////////////////////////////////////////////////////////////////////////
 
-// Create feature widget and expand widget
 const featureWidgetContainer = document.createElement("div");
-featureWidgetContainer.className = "feature-widget-container"; // Base styles
-
-// Ensure the container is ready with expanded styles if starting expanded
-featureWidgetContainer.classList.add("feature-widget-container-expanded"); // Start expanded
+featureWidgetContainer.style.width = "50%"; // Adjusted width to 50%
+featureWidgetContainer.style.height = "100%";
+featureWidgetContainer.style.position = "fixed"; // Added to keep it fixed on the right
+featureWidgetContainer.style.right = "0"; // Align to the right side
+featureWidgetContainer.style.top = "0"; // Align to the top
+featureWidgetContainer.style.overflow = "hidden"; // Added to prevent content overflow
 
 const featureWidget = new Feature({
   container: featureWidgetContainer,
@@ -425,160 +352,25 @@ const featureWidget = new Feature({
   spatialReference: activeView.spatialReference
 });
 
-// Add iframe to feature widget container
-// const pdfIframe = document.createElement("iframe");
-// pdfIframe.style.width = "100%";
-// pdfIframe.style.height = "calc(101vh - 100px)";
-// pdfIframe.style.border = "none";
-// pdfIframe.style.display = "block";
-// featureWidgetContainer.appendChild(pdfIframe);
-
-
-// Add an iframe to the feature widget container for HTML content
-const htmlIframe = document.createElement("iframe");
-htmlIframe.style.width = "100%";
-htmlIframe.style.height = "calc(100vh - 100px)";
-htmlIframe.style.border = "none";
-console.log("Attempting to load:", "./info.html");
-htmlIframe.src = "./info.html";
-featureWidgetContainer.appendChild(htmlIframe);
-
-/////////////////////////////////////////////////////////////////////////////////filter 
-
-htmlIframe.onload = function () {
-    const iframeDoc = htmlIframe.contentDocument || htmlIframe.contentWindow.document;
-    const citySelect = iframeDoc.getElementById("citySelect");
-    const megaCitiesCheck = iframeDoc.getElementById("megaCitiesCheck");
-    const largeCitiesCheck = iframeDoc.getElementById("largeCitiesCheck");
-    const caseStudySelect = iframeDoc.getElementById("caseStudySelect");
-    const provenanceSelect = iframeDoc.getElementById("provenanceSelect");
-
-    if (!citySelect || !megaCitiesCheck || !largeCitiesCheck || !caseStudySelect || !provenanceSelect) {
-        console.error("Dropdowns not found in info.html");
-        return;
-    }
-
-    // Ensure checkboxes are checked by default
-    megaCitiesCheck.checked = true;
-    largeCitiesCheck.checked = true;
-
-    // Define city layers and their coordinates
-    const cities = [
-        { name: "New York City", layer: nycLayer, center: [-74.006, 40.7128], zoom: 10 },
-        { name: "Los Angeles", layer: laLayer, center: [-118.2437, 34.0522], zoom: 10 },
-        { name: "Copenhagen", layer: copLayer, center: [12.5683, 55.6761], zoom: 11 },
-        { name: "Mexico City", layer: mexLayer, center: [-99.1332, 19.4326], zoom: 10 },
-        { name: "Durban", layer: DurbanLayer, center: [31.0218, -29.8587], zoom: 12 },
-        { name: "Rio de Janeiro", layer: rioLayer, center: [-43.1729, -22.9068], zoom: 11 },
-        { name: "Singapore", layer: saLayer, center: [103.8198, 1.3521], zoom: 11 }
-    ];
-
-    // Define Mega Cities and Large Cities layers
-    const megaCities = megaCityLayer;
-    const largeCities = largeCityLayer;
-
-    //fill City Dropdown
-    cities.forEach(city => {
-        const option = iframeDoc.createElement("option");
-        option.value = city.name;
-        option.textContent = city.name;
-        citySelect.appendChild(option);
-    });
-
-    //  City Dropdown Selection
-    citySelect.addEventListener("change", () => {
-        const selectedCity = cities.find(c => c.name === citySelect.value);
-        if (selectedCity) {
-            activeView.goTo({
-                center: selectedCity.center,
-                zoom: selectedCity.zoom
-            });
-
-            // Make only the selected city's layer visible, hide others
-            cities.forEach(city => {
-                city.layer.visible = (city.name === selectedCity.name);
-            });
-        }
-    });
-
-    //  Mega Cities Checkbox
-    megaCitiesCheck.addEventListener("change", () => {
-        megaCities.visible = megaCitiesCheck.checked;
-        console.log(megaCitiesCheck.checked ? "Mega Cities are now visible." : "Mega Cities are now hidden.");
-    });
-
-    // Large Cities Checkbox
-    largeCitiesCheck.addEventListener("change", () => {
-        largeCities.visible = largeCitiesCheck.checked;
-        console.log(largeCitiesCheck.checked ? "Large Cities are now visible." : "Large Cities are now hidden.");
-    });
-
-    //  Case Study Type Dropdown
-    const caseStudyOptions = ["Mitigation", "Adaptation", "Hybrid"];
-
-    caseStudyOptions.forEach(optionText => {
-        const option = iframeDoc.createElement("option");
-        option.value = optionText;
-        option.textContent = optionText;
-        caseStudySelect.appendChild(option);
-    });
-
-    // Case Study Type Selection (For Future Use)
-    caseStudySelect.addEventListener("change", () => {
-        const selectedCaseStudy = caseStudySelect.value;
-        console.log(`Case Study selected: ${selectedCaseStudy}`);
-    });
-
-    //  Case Study Provenance Dropdown
-    const provenanceOptions = ["Peer-reviewed", 	"Government document", 	"City network", "Knowledge network", "Non-government organization", "Other"];
-
-    provenanceOptions.forEach(optionText => {
-        const option = iframeDoc.createElement("option");
-        option.value = optionText;
-        option.textContent = optionText;
-        provenanceSelect.appendChild(option);
-    });
-
-    // Case Study Type Selection (For Future Use)
-    provenanceSelect.addEventListener("change", () => {
-        const provenanceStudy = provenanceSelect.value;
-        console.log(`Case Study selected: ${provenanceStudy}`);
-    });
-
-    console.log("City filter, Mega Cities, Large Cities, and Case Study dropdown successfully injected into info.html");
-};
-/////////////////////////////////////////////////////////////////////////////////// end of filter
-
-
+// Ensure feature widget is correctly initialized and added to the UI
 const featureExpand = new Expand({
   view: activeView,
   content: featureWidgetContainer,
-  expanded: true, // Ensure the widget starts as expanded
+  expanded: true, // Make sure this is true to start expanded
   expandIconClass: "esri-icon-layer-list",
   expandTooltip: "Feature Details"
 });
 
-
-// Dynamically add or remove the expanded class based on the widget's state
-featureExpand.watch("expanded", (expanded) => {
-  console.log('Expanded state changed to:', expanded);  // Debugging output
-  if (expanded) {
-    featureWidgetContainer.classList.add("feature-widget-container-expanded");
-  } else {
-    featureWidgetContainer.classList.remove("feature-widget-container-expanded");
-  }
-});
-
-// Add expand widget to the view
 activeView.ui.add(featureExpand, "top-right");
 
 // Debugging output to check initialization
 console.log("Feature widget added:", featureExpand);
 
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
+// Added to dynamically adjust the map container size based on the feature widget's visibility
+featureExpand.watch("expanded", function(isExpanded) {
+  document.getElementById("viewDiv").style.width = isExpanded ? "50%" : "100%";
+  activeView.resize(); // Ensure the map view adjusts to the new size
+});
 
 // Create widgets
 const zoom = new Zoom({
@@ -634,7 +426,7 @@ timeSlider.when(() => {
 // Create logo container
 const logoDiv = document.createElement("div");
 logoDiv.className = "logo-container";
-logoDiv.textContent = "UCCRN Atlas Demo";
+logoDiv.textContent = "atlas_backup_360";
 
 // Add settings icon to the top right side
 const settingsButton = document.createElement("div");
@@ -681,8 +473,6 @@ function updatePdfIframe(city) {
       pdfPath = `${pdfBasePath}cop-test.pdf#zoom=35`;
     } else if (city === "Mexico City") {
       pdfPath = `${pdfBasePath}mex-test.pdf#zoom=35`;
-    } else if (city === "Singapore") {
-      pdfPath = `${pdfBasePath}sa-test.pdf#zoom=35`;  
     } else if (city === "Durban") {
       pdfPath = `${pdfBasePath}Durb-test.pdf#zoom=35`;
     } else if (city === "Rio") {
@@ -734,10 +524,6 @@ activeView.whenLayerView(mexLayer).then((layerView) => {
   activeView.on("click", (event) => handleLayerViewClick(event, mexLayer, "Mexico City"));
 });
 
-activeView.whenLayerView(saLayer).then((layerView) => {
-  activeView.on("click", (event) => handleLayerViewClick(event, saLayer, "Singapore"));
-});
-
 activeView.whenLayerView(DurbanLayer).then((layerView) => {
   activeView.on("click", (event) => handleLayerViewClick(event, DurbanLayer, "Durban"));
 });
@@ -757,6 +543,7 @@ activeView.whenLayerView(naplesLayer).then((layerView) => {
 activeView.whenLayerView(kanoLayer).then((layerView) => {
   activeView.on("click", (event) => handleLayerViewClick(event, kanoLayer, "Kano"));
 });
+
 
 // Add click handler to close feature widget when clicking outside
 activeView.on("click", (event) => {
@@ -874,15 +661,6 @@ const searchWidget = new Search({
       placeholder: "Search Mexico City"
     },
     {
-      layer: saLayer,
-      searchFields: ["name", "uccrn"],
-      displayField: "name",
-      exactMatch: false,
-      outFields: ["*"],
-      name: "Singapore",
-      placeholder: "Search Singapore"
-    },
-    {
       layer: DurbanLayer,
       searchFields: ["name", "uccrn"],
       displayField: "name",
@@ -899,6 +677,15 @@ const searchWidget = new Search({
       outFields: ["*"],
       name: "Rio de Janeiro",
       placeholder: "Search Rio de Janeiro"
+    },
+    {
+      layer: saLayer,
+      searchFields: ["name", "uccrn"],
+      displayField: "name",
+      exactMatch: false,
+      outFields: ["*"],
+      name: "Singapore",
+      placeholder: "Search Singapore"
     },
      {
       layer: shanghaiLayer,
@@ -1027,4 +814,5 @@ activeView.on("click", (event) => {
     console.error("Error identifying pixel value:", error);
   });
 });
+
 
