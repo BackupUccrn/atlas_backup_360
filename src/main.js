@@ -175,10 +175,30 @@ const saLayer = new GeoJSONLayer({
   ...layerOptions
 });
 
+const shanghaiLayer = new GeoJSONLayer({
+  url: new URL("../cities/Shanghai.geojson", import.meta.url).href,
+  title: "Shanghai",
+  ...layerOptions
+});
+
+const naplesLayer = new GeoJSONLayer({
+  url: new URL("../cities/Naples.geojson", import.meta.url).href,
+  title: "Naples",
+  ...layerOptions
+});
+
+
+const kanoLayer = new GeoJSONLayer({
+  url: new URL("../cities/Kano.geojson", import.meta.url).href,
+  title: "Kano",
+  ...layerOptions
+});
+
+
 // Create map with basemap and layers
 const map = new Map({
   basemap: basemap,
-  layers: [yceouhi_v4, lecz_v3, ssp245, nycLayer, laLayer, copLayer, mexLayer, DurbanLayer, rioLayer, saLayer],
+  layers: [yceouhi_v4, lecz_v3, ssp245, nycLayer, laLayer, copLayer, mexLayer, DurbanLayer, rioLayer, saLayer, shanghaiLayer, napleslayer, kanoLayer],
   // Add attribution
   portalItem: {
     attribution: "CIESIN, Columbia University"
@@ -615,6 +635,7 @@ function updatePdfIframe(city) {
     pdfPath = `${pdfBasePath}rio-test.pdf#zoom=35`;
     }
     
+    
     if (pdfPath) {
       pdfIframe.src = pdfPath;
       pdfIframe.onerror = () => {
@@ -666,6 +687,18 @@ activeView.whenLayerView(DurbanLayer).then((layerView) => {
 
 activeView.whenLayerView(rioLayer).then((layerView) => {
   activeView.on("click", (event) => handleLayerViewClick(event, rioLayer, "Rio de Janeiro"));
+});
+
+activeView.whenLayerView(shanghaiLayer).then((layerView) => {
+  activeView.on("click", (event) => handleLayerViewClick(event, shanghaiLayer, "Shanghai"));
+});
+
+activeView.whenLayerView(naplesLayer).then((layerView) => {
+  activeView.on("click", (event) => handleLayerViewClick(event, naplesLayer, "Naples"));
+});
+
+activeView.whenLayerView(kanoLayer).then((layerView) => {
+  activeView.on("click", (event) => handleLayerViewClick(event, kanoLayer, "Kano"));
 });
 
 
@@ -810,6 +843,33 @@ const searchWidget = new Search({
       outFields: ["*"],
       name: "Singapore",
       placeholder: "Search Singapore"
+    },
+    {
+      layer: shanghaiLayer,
+      searchFields: ["name", "uccrn"],
+      displayField: "name",
+      exactMatch: false,
+      outFields: ["*"],
+      name: "Shanghai",
+      placeholder: "Search Shanghai"
+    },
+    {
+      layer: naplesLayer,
+      searchFields: ["name", "uccrn"],
+      displayField: "name",
+      exactMatch: false,
+      outFields: ["*"],
+      name: "Naples",
+      placeholder: "Search Naples"
+    },
+    {
+      layer: kanoLayer,
+      searchFields: ["name", "uccrn"],
+      displayField: "name",
+      exactMatch: false,
+      outFields: ["*"],
+      name: "Kano",
+      placeholder: "Search Kano"
     }
   ],
   popupEnabled: false,
