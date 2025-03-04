@@ -1,0 +1,19 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": 4,
+      "geometry": {
+        "type": "Point",
+        "coordinates": [14.268100000000043, 40.851800000000074]
+      },
+      "properties": {
+        "OBJECTID": 4,
+        "City": "Naples",
+        "Longitude__X_": 14.2681,
+        "Latitude__Y_": 40.8518
+      }
+    }
+  ]
+}
