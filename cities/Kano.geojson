@@ -3,15 +3,12 @@
   "features": [
     {
       "type": "Feature",
+      "name": "Kano",
       "id": "relation/3710302",
       "properties": {
-        "type": "relation",
-        "id": 3710302,
-        "tags": {
-        },
-        "relations": [],
-        "meta": {},
-        "name": "Kano (Kano State)"
+        "name": "Kano"
+        "uccrn": " "
+      
       },
       "geometry": {
         "type": "Polygon",
