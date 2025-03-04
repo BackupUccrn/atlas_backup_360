@@ -3,11 +3,11 @@
    "features": [
     {
        "type": "Feature",
-      "name": "Durban Municipality",
-       "id": "relation/610720",
+      "name": "Shanghai",
+       "id": "relation/913067",
        "properties": {
-         "name": "Durban",
-         "uccrn": "flood"
+         "name": "Shanghai",
+         "uccrn": "coastal"
        },
        "geometry": {
         "type": "MultiPolygon",
