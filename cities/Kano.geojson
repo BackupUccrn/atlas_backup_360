@@ -8,11 +8,11 @@
       "properties": {
         "name": "Kano"
         "uccrn": "heat"
-      
       },
       "geometry": {
         "type": "Polygon",
-        "coordinates": [
+        "coordinates":
+        [
           [
             [
               8.1947536,
