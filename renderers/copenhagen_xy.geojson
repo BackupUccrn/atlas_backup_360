@@ -1,0 +1,19 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": 2,
+      "geometry": {
+        "type": "Point",
+        "coordinates": [12.568300000000022, 55.676100000000076]
+      },
+      "properties": {
+        "OBJECTID": 2,
+        "City": "Copenhagen",
+        "Longitude__X_": 12.568300000000001,
+        "Latitude__Y_": 55.676099999999998
+      }
+    }
+  ]
+}
