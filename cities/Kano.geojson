@@ -1,21 +1,23 @@
 {
   "type": "FeatureCollection",
-   "features": [
-  {
+  "features": [
+    {
       "type": "Feature",
-      "name": "Kano",
-       "id": "relation/3710302",
-        "properties": {
-          "name": "Kano",
-          "uccrn": ""
+      "id": "relation/3710302",
+      "properties": {
+        "type": "relation",
+        "id": 3710302,
+        "tags": {
         },
-        "geometry": {
-         "type": "MultiPolygon",
-          "coordinates": [
+        "relations": [],
+        "meta": {},
+        "name": "Kano (Kano State)"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
           [
-           [
-            [ 
-
+            [
               8.1947536,
               12.5676073
             ],
