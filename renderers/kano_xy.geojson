@@ -1,0 +1,19 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": 5,
+      "geometry": {
+        "type": "Point",
+        "coordinates": [8.530000000000034, 12.002200000000057]
+      },
+      "properties": {
+        "OBJECTID": 5,
+        "City": "Kano",
+        "Longitude__X_": 8.53,
+        "Latitude__Y_": 12.0022
+      }
+    }
+  ]
+}
