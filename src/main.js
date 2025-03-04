@@ -197,7 +197,7 @@ const kanoLayer = new GeoJSONLayer({
 // Create map with basemap and layers
 const map = new Map({
   basemap: basemap,
-  layers:  [yceouhi_v4, lecz_v3, ssp245, nycLayer, laLayer, copLayer, mexLayer, DurbanLayer, rioLayer, saLayer, shanghaiLayer, napleslayer, kanoLayer],
+  layers:  [yceouhi_v4, lecz_v3, ssp245, nycLayer, laLayer, copLayer, mexLayer, DurbanLayer, rioLayer, saLayer, shanghaiLayer, naplesLayer, kanoLayer],
   
   // Add attribution
   portalItem: {
