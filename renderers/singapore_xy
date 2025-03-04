@@ -1,0 +1,19 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": 1,
+      "geometry": {
+        "type": "Point",
+        "coordinates": [103.81980000000004, 1.352100000000064]
+      },
+      "properties": {
+        "OBJECTID": 1,
+        "City": "Singapore",
+        "Longitude__X_": 103.8198,
+        "Latitude__Y_": 1.3521000000000001
+      }
+    }
+  ]
+}
