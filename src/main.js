@@ -25,7 +25,7 @@ import "@esri/calcite-components/dist/calcite/calcite.css";
 import "./style.css";
 
 // Set the API key
-esriConfig.apiKey = "AAPTxy8BH1VEsoebNVZXo8HurIWA0Kb8hy8QYktHa6tfxwpxL5sq5rL-OKSuRlzZC9F2Vx9RXZcShiMwuHMhLzuysGK9DOZXmlj8YtO2q-kOSOKJDJvfGUXZvDIQFnEYAcX1-GyD7A6h2ctULOaxG58EdiJ2r7EN13WWi2UbSYOGXS-ZOcb_XWNfetLgtAVFJc5JdCw2uxz1O3cMlKRkpu9oae3RWwAU6gtPusEZVd6hbjY.AT1_ZoJgL2zc";
+esriConfig.apiKey = import.meta.env.VITE_ESRI_API_KEY;
 
 // Create grey canvas basemap
 const basemap = Basemap.fromId("dark-gray-vector");
@@ -157,6 +157,12 @@ const mexLayer = new GeoJSONLayer({
   ...layerOptions
 });
 
+const saLayer = new GeoJSONLayer({
+  url: new URL("../cities/singapore.geojson", import.meta.url).href,
+  title: "Singapore",
+  ...layerOptions
+});
+
 const DurbanLayer = new GeoJSONLayer({
   url: new URL("../cities/Durban.geojson", import.meta.url).href,
   title: "Durban",
@@ -166,12 +172,6 @@ const DurbanLayer = new GeoJSONLayer({
 const rioLayer = new GeoJSONLayer({
   url: new URL("../cities/Rio-de-Janeiro-city.geojson", import.meta.url).href,
   title: "Rio de Janeiro",
-  ...layerOptions
-});
-
-const saLayer = new GeoJSONLayer({
-  url: new URL("../cities/singapore.geojson", import.meta.url).href,
-  title: "Singapore",
   ...layerOptions
 });
 
@@ -194,16 +194,16 @@ const kanoLayer = new GeoJSONLayer({
   ...layerOptions
 });
 
-
 // Create map with basemap and layers
 const map = new Map({
   basemap: basemap,
-  layers: [yceouhi_v4, lecz_v3, ssp245, nycLayer, laLayer, copLayer, mexLayer, DurbanLayer, rioLayer, saLayer, shanghaiLayer, napleslayer, kanoLayer],
+  layers:  [yceouhi_v4, lecz_v3, ssp245, nycLayer, laLayer, copLayer, mexLayer, DurbanLayer, rioLayer, saLayer, shanghaiLayer, napleslayer, kanoLayer],
   // Add attribution
   portalItem: {
     attribution: "CIESIN, Columbia University"
   }
 });
+
 //////////////////////////////////////////////////////////////////checked boxes 
 // Load Mega City Layer with Custom Symbol
 const megaCityLayer = new GeoJSONLayer({
@@ -215,8 +215,8 @@ const megaCityLayer = new GeoJSONLayer({
         symbol: {
             type: "simple-marker",
             style: "circle",
-            color: [255, 0, 0, 1], 
-            size: 6, // 
+            color: [0, 0, 255, 1], 
+            size: 12, // 
             outline: {
                 color: [0, 0, 0, 0], 
                 width: 0
@@ -235,8 +235,8 @@ const largeCityLayer = new GeoJSONLayer({
         symbol: {
             type: "simple-marker",
             style: "circle", 
-            color: [255, 255, 0, 1], 
-            size: 5, // 
+            color: [0, 128, 0, 1], 
+            size: 7, // 
             outline: {
                 color: [0, 0, 0, 0], 
                 width: 0
@@ -252,7 +252,7 @@ map.addMany([megaCityLayer, largeCityLayer]);
 // Add portal layer
 Layer.fromPortalItem({
   portalItem: {
-    id: "20da8d9af73043bd88a3566d5602b86e"
+    id: "20da8d9af73043bd88a3566d5602b86e" 
   }
 }).then((layer) => {
   layer.visible = false; // Start with layer hidden
@@ -263,14 +263,31 @@ Layer.fromPortalItem({
     layer: layer,
     title: "Global climate (Köppen–Geiger-climate-classification)"
   });
+});
 
-// Add portal layer for Land Cover
+// Add portal layer
 Layer.fromPortalItem({
   portalItem: {
-    id: "eb4f0fd5274242a18bde901f78f7584d"
+    id: "6690a75950004b79927f585ee79c9a7e" 
   }
 }).then((layer) => {
-  layer.visible = false; // Start with the layer hidden
+  layer.visible = false; // Start with layer hidden
+  map.add(layer);
+
+  // Add layer to layer list
+  layerList.operationalItems.add({
+    layer: layer,
+    title: "Global Anthropogenic Biomes"
+  });
+});
+
+// Add portal layer
+Layer.fromPortalItem({
+  portalItem: {
+    id: "eb4f0fd5274242a18bde901f78f7584d" 
+  }
+}).then((layer) => {
+  layer.visible = false; // Start with layer hidden
   map.add(layer);
 
   // Add layer to layer list
@@ -279,11 +296,22 @@ Layer.fromPortalItem({
     title: "Land Cover 2023 MODIS"
   });
 });
-  
-}).catch((error) => {
-  console.error("Error loading Land Cover layer:", error);
-});
 
+// Add portal layer for population Cover
+Layer.fromPortalItem({
+  portalItem: {
+    id: "9778e7bddfdc4b7889fd2f385e8346f0"
+  }
+}).then((layer) => {
+  layer.visible = true;
+  map.add(layer);
+
+  // Add layer to layer list
+  layerList.operationalItems.add({
+    layer: layer,
+    title: "Population count 2025 (GHSL_3arcsec)"
+  });
+});
 
 // Setup portal and group query
 const portal = new Portal();
@@ -398,12 +426,13 @@ const featureWidget = new Feature({
 });
 
 // Add iframe to feature widget container
-//const pdfIframe = document.createElement("iframe");
-//pdfIframe.style.width = "100%";
-//pdfIframe.style.height = "calc(101vh - 100px)";
-//pdfIframe.style.border = "none";
-//pdfIframe.style.display = "block";
-//featureWidgetContainer.appendChild(pdfIframe);
+// const pdfIframe = document.createElement("iframe");
+// pdfIframe.style.width = "100%";
+// pdfIframe.style.height = "calc(101vh - 100px)";
+// pdfIframe.style.border = "none";
+// pdfIframe.style.display = "block";
+// featureWidgetContainer.appendChild(pdfIframe);
+
 
 // Add an iframe to the feature widget container for HTML content
 const htmlIframe = document.createElement("iframe");
@@ -413,6 +442,7 @@ htmlIframe.style.border = "none";
 console.log("Attempting to load:", "./info.html");
 htmlIframe.src = "./info.html";
 featureWidgetContainer.appendChild(htmlIframe);
+
 /////////////////////////////////////////////////////////////////////////////////filter 
 
 htmlIframe.onload = function () {
@@ -421,8 +451,9 @@ htmlIframe.onload = function () {
     const megaCitiesCheck = iframeDoc.getElementById("megaCitiesCheck");
     const largeCitiesCheck = iframeDoc.getElementById("largeCitiesCheck");
     const caseStudySelect = iframeDoc.getElementById("caseStudySelect");
+    const provenanceSelect = iframeDoc.getElementById("provenanceSelect");
 
-    if (!citySelect || !megaCitiesCheck || !largeCitiesCheck || !caseStudySelect) {
+    if (!citySelect || !megaCitiesCheck || !largeCitiesCheck || !caseStudySelect || !provenanceSelect) {
         console.error("Dropdowns not found in info.html");
         return;
     }
@@ -482,7 +513,7 @@ htmlIframe.onload = function () {
         console.log(largeCitiesCheck.checked ? "Large Cities are now visible." : "Large Cities are now hidden.");
     });
 
-    //  Case Study Dropdown
+    //  Case Study Type Dropdown
     const caseStudyOptions = ["Mitigation", "Adaptation", "Hybrid"];
 
     caseStudyOptions.forEach(optionText => {
@@ -492,15 +523,32 @@ htmlIframe.onload = function () {
         caseStudySelect.appendChild(option);
     });
 
-    // e Case Study Selection (For Future Use)
+    // Case Study Type Selection (For Future Use)
     caseStudySelect.addEventListener("change", () => {
         const selectedCaseStudy = caseStudySelect.value;
         console.log(`Case Study selected: ${selectedCaseStudy}`);
     });
 
+    //  Case Study Provenance Dropdown
+    const provenanceOptions = ["Peer-reviewed", 	"Government document", 	"City network", "Knowledge network", "Non-government organization", "Other"];
+
+    provenanceOptions.forEach(optionText => {
+        const option = iframeDoc.createElement("option");
+        option.value = optionText;
+        option.textContent = optionText;
+        provenanceSelect.appendChild(option);
+    });
+
+    // Case Study Type Selection (For Future Use)
+    provenanceSelect.addEventListener("change", () => {
+        const provenanceStudy = provenanceSelect.value;
+        console.log(`Case Study selected: ${provenanceStudy}`);
+    });
+
     console.log("City filter, Mega Cities, Large Cities, and Case Study dropdown successfully injected into info.html");
 };
-///////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////// end of filter
+
 
 const featureExpand = new Expand({
   view: activeView,
@@ -509,6 +557,7 @@ const featureExpand = new Expand({
   expandIconClass: "esri-icon-layer-list",
   expandTooltip: "Feature Details"
 });
+
 
 // Dynamically add or remove the expanded class based on the widget's state
 featureExpand.watch("expanded", (expanded) => {
@@ -528,6 +577,9 @@ console.log("Feature widget added:", featureExpand);
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
 // Create widgets
 const zoom = new Zoom({
   view: activeView
@@ -582,7 +634,7 @@ timeSlider.when(() => {
 // Create logo container
 const logoDiv = document.createElement("div");
 logoDiv.className = "logo-container";
-logoDiv.textContent = "atlas_backup_360";
+logoDiv.textContent = "UCCRN Atlas Demo";
 
 // Add settings icon to the top right side
 const settingsButton = document.createElement("div");
@@ -629,12 +681,13 @@ function updatePdfIframe(city) {
       pdfPath = `${pdfBasePath}cop-test.pdf#zoom=35`;
     } else if (city === "Mexico City") {
       pdfPath = `${pdfBasePath}mex-test.pdf#zoom=35`;
+    } else if (city === "Singapore") {
+      pdfPath = `${pdfBasePath}sa-test.pdf#zoom=35`;  
     } else if (city === "Durban") {
       pdfPath = `${pdfBasePath}Durb-test.pdf#zoom=35`;
     } else if (city === "Rio") {
     pdfPath = `${pdfBasePath}rio-test.pdf#zoom=35`;
     }
-    
     
     if (pdfPath) {
       pdfIframe.src = pdfPath;
@@ -681,6 +734,10 @@ activeView.whenLayerView(mexLayer).then((layerView) => {
   activeView.on("click", (event) => handleLayerViewClick(event, mexLayer, "Mexico City"));
 });
 
+activeView.whenLayerView(saLayer).then((layerView) => {
+  activeView.on("click", (event) => handleLayerViewClick(event, saLayer, "Singapore"));
+});
+
 activeView.whenLayerView(DurbanLayer).then((layerView) => {
   activeView.on("click", (event) => handleLayerViewClick(event, DurbanLayer, "Durban"));
 });
@@ -700,7 +757,6 @@ activeView.whenLayerView(naplesLayer).then((layerView) => {
 activeView.whenLayerView(kanoLayer).then((layerView) => {
   activeView.on("click", (event) => handleLayerViewClick(event, kanoLayer, "Kano"));
 });
-
 
 // Add click handler to close feature widget when clicking outside
 activeView.on("click", (event) => {
@@ -818,6 +874,15 @@ const searchWidget = new Search({
       placeholder: "Search Mexico City"
     },
     {
+      layer: saLayer,
+      searchFields: ["name", "uccrn"],
+      displayField: "name",
+      exactMatch: false,
+      outFields: ["*"],
+      name: "Singapore",
+      placeholder: "Search Singapore"
+    },
+    {
       layer: DurbanLayer,
       searchFields: ["name", "uccrn"],
       displayField: "name",
@@ -835,16 +900,7 @@ const searchWidget = new Search({
       name: "Rio de Janeiro",
       placeholder: "Search Rio de Janeiro"
     },
-    {
-      layer: saLayer,
-      searchFields: ["name", "uccrn"],
-      displayField: "name",
-      exactMatch: false,
-      outFields: ["*"],
-      name: "Singapore",
-      placeholder: "Search Singapore"
-    },
-    {
+     {
       layer: shanghaiLayer,
       searchFields: ["name", "uccrn"],
       displayField: "name",
@@ -908,86 +964,6 @@ activeView.ui.add(settingsButton, "top-right");
 
 // Add to view UI
 activeView.ui.add(selectorExpand, "top-left");
-
-// Function to create and manage the PDF Viewer widget
-function createPdfViewerWidget() {
-  // Create the container for the PDF Viewer
-  const pdfContainer = document.createElement("div");
-  pdfContainer.className = "pdf-widget-container"; 
-  pdfContainer.style.width = "500px"; 
-  pdfContainer.style.height = "600px";
-  pdfContainer.style.background = "#ffffff";
-  pdfContainer.style.boxShadow = "0px 4px 6px rgba(0, 0, 0, 0.1)";
-  pdfContainer.style.padding = "10px";
-  pdfContainer.style.overflow = "hidden";
-
-  // Create the iframe to display PDFs
-  const pdfIframe = document.createElement("iframe");
-  pdfIframe.style.width = "100%";
-  pdfIframe.style.height = "100%";
-  pdfIframe.style.border = "none";
-
-  pdfContainer.appendChild(pdfIframe);
-
-  // Create Expand widget for the PDF viewer
-  const pdfExpand = new Expand({
-    view: activeView,
-    content: pdfContainer,
-    expanded: false,
-    expandIconClass: "esri-icon-documentation",
-    expandTooltip: "View City Report"
-  });
-
-  // Add to the UI
-  activeView.ui.add(pdfExpand, "top-right");
-
-  return { pdfContainer, pdfIframe, pdfExpand };
-}
-
-// Initialize the PDF widget
-const { pdfContainer, pdfIframe, pdfExpand } = createPdfViewerWidget();
-
-// Function to update the PDF based on clicked megacity
-function updatePdfViewer(city) {
-  const pdfBasePath = "./pdfs/";
-  const pdfFiles = {
-    "New York City": "nyc-report.pdf",
-    "Los Angeles City": "la-report.pdf",
-    "Mexico City": "mexico-report.pdf"
-  };
-
-  if (pdfFiles[city]) {
-    pdfIframe.src = `${pdfBasePath}${pdfFiles[city]}#zoom=75`;
-    pdfExpand.expanded = true; // Open the widget when a city is clicked
-  } else {
-    console.error(`No PDF found for ${city}`);
-  }
-}
-
-// Handle click events for the MegaCity layer
-activeView.on("click", (event) => {
-  activeView.hitTest(event).then((response) => {
-    const results = response.results;
-    
-    if (results.length > 0) {
-      const graphic = results.find((res) => res.graphic.layer === megaCityLayer)?.graphic;
-      
-      if (graphic) {
-        const cityName = graphic.attributes?.name || "Unknown City";
-        updatePdfViewer(cityName);
-      }
-    }
-  });
-});
-
-// Ensure clicking outside closes the widget
-activeView.on("click", (event) => {
-  activeView.hitTest(event).then((response) => {
-    if (!response.results.some(res => res.graphic.layer === megaCityLayer)) {
-      pdfExpand.expanded = false; // Close widget if clicking outside
-    }
-  });
-});
 
 // Add function to check multidimensional layer visibility
 function updateMultidimensionalFilterVisibility() {
