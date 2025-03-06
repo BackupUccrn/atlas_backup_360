@@ -247,77 +247,6 @@ const largeCityLayer = new GeoJSONLayer({
 
 // Add layers to the map, but DO NOT add to the layer list UI
 map.addMany([megaCityLayer, largeCityLayer]);
-
-////////////////////////////////////////////////////////////////////////////////point
-
-// Import necessary modules from ArcGIS API for JavaScript
-import GeoJSONLayer from "@arcgis/core/layers/GeoJSONLayer";
-import Map from "@arcgis/core/Map";
-import MapView from "@arcgis/core/views/MapView";
-
-// Define the NYC GeoJSON layer
-const pdfnycLayer = new GeoJSONLayer({
-    url: "../cities/pdfnyc.geojson",  // Make sure the path is correct
-    title: "NYC",
-    renderer: {
-        type: "simple",
-        symbol: {
-            type: "simple-fill",
-            color: "red",
-            outline: {
-                color: "white",
-                width: 1
-            }
-        }
-    },
-    popupTemplate: {
-        title: "{pdf}",  // Ensure that 'pdf' is a valid field in your GeoJSON file
-        content: [
-            {
-                type: "fields",
-                fieldInfos: [
-                    {
-                        fieldName: "description",
-                        label: "Description"
-                    }
-                ]
-            }
-        ]
-    }
-});
-
-// Initialize the Map
-const map = new Map({
-    basemap: "topo-vector",
-    layers: [pdfnycLayer]  // Add the NYC layer to the map
-});
-
-
-// Function to Load PDF based on City
-function showPdfForFeature(cityName) {
-    let pdfUrl;
-    if (cityName === "NYC") {
-        pdfUrl = './path/to/pdf/nyc-test.pdf';  // Ensure the path is correct
-    }
-
-    if (pdfUrl) {
-        testIframe.src = pdfUrl;
-        testExpand.expanded = true;
-    }
-}
-
-// Map Interaction and Event Handling
-view.on("click", (event) => {
-    view.hitTest(event).then((response) => {
-        const results = response.results.filter((r) => r.graphic.layer === pdfnycLayer);
-
-        if (results.length > 0) {
-            const cityName = results[0].graphic.attributes.CityName;
-            showPdfForFeature(cityName);
-        }
-    });
-});
-
 ///////////////////////////////////////////////////////////////checked boxes end 
 
 // Add portal layer
@@ -381,6 +310,22 @@ Layer.fromPortalItem({
   layerList.operationalItems.add({
     layer: layer,
     title: "Population count 2025 (GHSL_3arcsec)"
+  });
+});
+
+// Add portal layer for uccrn base layer
+Layer.fromPortalItem({
+  portalItem: {
+    id: "9b96670f10bb4f2085cf7cf70ad96b3d"
+  }
+}).then((layer) => {
+  layer.visible = true;
+  map.add(layer);
+
+  // Add layer to layer list
+  layerList.operationalItems.add({
+    layer: layer,
+    title: "UCCRN Atlas Cities"
   });
 });
 
