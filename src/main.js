@@ -28,7 +28,7 @@ import "./style.css";
 esriConfig.apiKey = import.meta.env.VITE_ESRI_API_KEY;
 
 // Create grey canvas basemap
-const basemap = Basemap.fromId("dark-gray-base");
+const basemap = Basemap.fromId("imagery");
 
 // Create variable definitions with multiple variables and dimensions
 const variableDefinitions = [
